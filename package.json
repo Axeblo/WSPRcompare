@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -14,14 +14,19 @@
     "@fontsource/roboto": "^4.5.8",
     "@mui/material": "^5.11.15",
     "@mui/x-date-pickers": "^6.0.3",
+    "chart.js": "^4.2.1",
     "dayjs": "^1.11.7",
     "firebase": "^9.18.0",
+    "firebase-cli": "^1.2.0",
+    "firebase-tools": "^11.25.2",
     "leaflet": "^1.9.3",
     "leaflet.markercluster": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
-    "react-leaflet-markercluster": "^3.0.0-rc1"
+    "react-leaflet-markercluster": "^3.0.0-rc1",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

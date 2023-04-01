@@ -1,0 +1,8 @@
+.BottomBar {
+    display: absolute;
+    box-sizing: border-box;
+    bottom: 0;
+    height: 30vh;
+    width: 100%;
+    border-top: 2px solid white;
+}

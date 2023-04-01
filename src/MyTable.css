@@ -1,0 +1,15 @@
+.map {
+    margin: 20px 0;
+    overflow:hidden;
+    animation: myShow 1s ease-in-out;
+}
+
+@keyframes myShow {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

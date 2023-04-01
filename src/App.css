@@ -1,8 +1,16 @@
 #root {
-  max-width: 1280px;
+  height: 100vh;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
+  overflow: hidden;
+}
+
+.TheRest {
+  height: 70vh;
+  width: 100%;
+  overflow: auto;
+  margin: 0;
 }
 
 .logo {
@@ -39,4 +47,78 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading_map {
+  display: inline-block;
+  vertical-align: top;
+  padding: 100px;
+  border: 1px solid #626262;
+  
+  border-radius: 20px;
+  margin: 10px;
+
+
+}
+.loading_table {
+  display: block;
+  text-align: center;
+  width: 100%;
+  border: 1px solid #626262;
+  
+  border-radius: 20px;
+
+  margin: 0 auto;
+  margin-top: 70px;
+
+  height: 400px;
+  line-height: 400px;
+}
+
+.leaflet-container {
+  height: 600px;
+    width: 500px;
+}
+
+.leaflet-div-icon {
+  background: transparent;
+  border: none;
+}
+
+/* Customise Zoom Controls */
+
+.leaflet-control-zoom a {
+  color: white !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.5s ease;
+}
+
+.leaflet-control-zoom a:hover {
+  color: white !important;
+  background: rgba(0, 0, 0, 0.9) !important;
 }
