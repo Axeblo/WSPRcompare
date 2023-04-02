@@ -1,7 +1,32 @@
-.map {
-    margin: 20px 0;
-    overflow:hidden;
-    animation: myShow 1s ease-in-out;
+.MyTable {
+    overflow-y: auto;
+    height: 100%;
+    font-size: .8em;
+}
+
+.myTable thead th {
+    position: sticky;
+    top: 0px;
+    border: 1px solid #ddd;
+}
+
+.MyTable table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+
+.MyTable tbody {
+    width: 100%;
+    height: 20px;
+}
+
+.MyTable tr {
+    width: 100%;
+}
+.MyTable td {
+    margin: 2px 40px;
+    border: 1px solid #4b4b4b;
 }
 
 @keyframes myShow {

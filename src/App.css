@@ -6,13 +6,16 @@
   overflow: hidden;
 }
 
-.TheRest {
-  height: 70vh;
+.MainPanel {
+  height: calc(100vh - 300px);
   width: 100%;
   overflow: auto;
   margin: 0;
 }
-
+.layout {
+  max-width: 1000px;
+  margin: 0 auto;
+}
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -77,11 +80,11 @@
 .loading_map {
   display: inline-block;
   vertical-align: top;
-  padding: 100px;
-  border: 1px solid #626262;
   
-  border-radius: 20px;
-  margin: 10px;
+  height: 100%;
+  width: 100%;
+
+  line-height: 200px;
 
 
 }
@@ -110,6 +113,10 @@
   border: none;
 }
 
+.leaflet-control-attribution {
+  display: none;
+}
+
 /* Customise Zoom Controls */
 
 .leaflet-control-zoom a {
@@ -121,4 +128,20 @@
 .leaflet-control-zoom a:hover {
   color: white !important;
   background: rgba(0, 0, 0, 0.9) !important;
+}
+
+.PanelContainer {
+  background-color: #181b1f;
+  border: 1px solid #ccccdc12;
+  border-radius: 3px;
+  height: 100%;
+}
+
+.PanelHeader {
+  height: 32px;
+  line-height: 32px;
+}
+
+.PanelContent {
+  height: calc(100% - 50px);
 }

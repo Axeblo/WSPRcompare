@@ -1,37 +1,42 @@
 import './App.css';
 
+// import {Histogram} from "@d3/histogram"
+
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-import "./App.css";
+import '/node_modules/react-grid-layout/css/styles.css';
+import '/node_modules/react-resizable/css/styles.css';
+
 import 'leaflet/dist/leaflet.css';
-import { useDispatch } from 'react-redux';
 
 import React, {useState, useEffect} from 'react';
+import { useDispatch } from 'react-redux';
+
+import GridLayout from "react-grid-layout";
+
 import MyTable from './MyTable';
 import BottomBar from './BottomBar';
+import WSPRMap from './WSPRMap';
+import Histogram from './Histogram';
+import AntennaGain from './AntennaGain';
 
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import { DateTimePicker, StaticDateTimePicker } from '@mui/x-date-pickers';
-import { ThemeProvider, createTheme } from '@mui/material/styles'
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-
-
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { DateTimePicker, StaticDateTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import dayjs from 'dayjs';
-
-import WSPRMap from './WSPRMap';
-
-import Chart from 'chart.js/auto'
-
+import Chart from 'chart.js/auto';
+import { set } from 'ol/transform';
 
 const UPDATE_DATA = 'UPDATE_DATA';
 
@@ -43,18 +48,7 @@ function updateData(payload) {
 }
 
 function App() {
-
   const dispatch = useDispatch();
-
-  function handleClickA() {
-    dispatch(updateData(WSPRAData));
-  }
-  function handleClickB() {
-    dispatch(updateData(WSPRBData));
-  }
-  function handleClickC() {
-    dispatch(updateData(WSPRCData));
-  }
   
   async function getJSONWithParameters(TXSign) {
     let startTimeAndDate = dayjs(start).format('YYYY-MM-DD HH:mm:ss');
@@ -65,34 +59,31 @@ function App() {
     return fetch(url)
     .then(response => response.json())
     .then(data => {
-      // console.log("JSON Requst, TXSign:"+TXSign);
-      // console.log(data);
       return data;
     });
   }
   
-  const [WSPRAPromise,  setWSPRAPromise]      = useState(null);
-  const [WSPRAData,     setWSPRAData]         = useState(null);
-  const [WSPRAError,    setWSPRAError]        = useState(null);
-  const [TXSignA,       setTXSignA]           = useState("SK0WE");
-  
-  const [WSPRBPromise,  setWSPRBPromise]      = useState(null);
-  const [WSPRBData,     setWSPRBData]         = useState(null);
-  const [WSPRBError,    setWSPRBError]        = useState(null);
-  const [TXSignB,       setTXSignB]           = useState("SK0WE/P");
-  
-  const [WSPRCPromise,  setWSPRCPromise]      = useState(null);
-  const [WSPRCData,     setWSPRCData]         = useState(null);
-  const [WSPRCError,    setWSPRCError]        = useState(null);
-  const [TXSignC,       setTXSignC]           = useState("Compare");
+  const [WSPRAPromise,    setWSPRAPromise]      = useState(null);
+  const [WSPRAData,       setWSPRAData]         = useState(null);
+  const [WSPRAError,      setWSPRAError]        = useState(null);
+  const [TXSignA,         setTXSignA]           = useState("SK0WE");
 
-  const [band, setBand]                       = useState(10);
-  const [start, setStart]                     = useState(dayjs('2022-06-03 12:24'));
-  const [stop, setStop]                       = useState(dayjs('2022-06-03 15:28'));
-  const [numberOfEntries, setNumberOfEntries] = useState(1000);
+  const [WSPRBPromise,    setWSPRBPromise]      = useState(null);
+  const [WSPRBData,       setWSPRBData]         = useState(null);
+  const [WSPRBError,      setWSPRBError]        = useState(null);
+  const [TXSignB,         setTXSignB]           = useState("SK0WE/P");
 
-  const [chart, setChart]                     = useState(null);
-  const [antennaGainChart,setAntennaGainChart]= useState(null);
+  const [WSPRCPromise,    setWSPRCPromise]      = useState(null);
+  const [WSPRCData,       setWSPRCData]         = useState(null);
+  const [WSPRCError,      setWSPRCError]        = useState(null);
+  const [TXSignC,         setTXSignC]           = useState("Compare");
+
+  const [band,            setBand]              = useState(10);
+  const [start,           setStart]             = useState(dayjs('2022-06-03 12:24'));
+  const [stop,            setStop]              = useState(dayjs('2022-06-03 15:28'));
+  const [numberOfEntries, setNumberOfEntries]   = useState(1000);
+
+  const [chart,           setChart]             = useState(null);
   
   function submitButton(e) {
     setWSPRCPromise("test");
@@ -264,13 +255,8 @@ function App() {
     if(!WSPRCData)
       return;
 
-    if(chart)
-      chart.destroy();
+    if(chart) chart.destroy();
     setChart(null);
-
-    if(antennaGainChart)
-      antennaGainChart.destroy();
-    setAntennaGainChart(null);
 
     //https://plotly.com/javascript/polar-chart/
   
@@ -290,42 +276,6 @@ function App() {
       }
     );
     setChart(chart1);
-
-    const bucketSize = 20;
-    const bucketCount = 360/bucketSize;
-    
-    var buckets = [bucketCount];
-    var labels = [bucketCount];
-    for(var i = 0; i < bucketCount; ++i) {
-      //buckets[i] = 0;
-      labels[i] = i*bucketSize;
-    }
-    WSPRCData.data.forEach(row => {
-      buckets[Math.floor(row[12]/bucketSize)] = row[16];
-    });
-
-    var chart2 = new Chart(
-      document.getElementById('antennaGain'),
-      {
-        type: 'radar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'SNR difference',
-              data: buckets
-            }
-          ]
-        },
-        options: {
-        scale: {
-            min: -10
-        },
-    },
-      }
-    );
-
-    setAntennaGainChart(chart2);
 
   }, [WSPRCData]);
 
@@ -363,9 +313,15 @@ function App() {
   return(
      <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
-        <div className="TheRest">
+        <div className="MainPanel">
+          <header style={{height:70, width:"100%",textAlign:"right",paddingTop:10}}>
+              <div className="Wrapper" style={{maxWidth:1000, margin:"0 auto"}}>
+                <DateTimePicker onChange={(newValue)=>setStart(newValue)} label="Start" value={start} format="YYYY-MM-DD HH:mm"/>
+                <DateTimePicker onChange={(newValue)=>setStop(newValue)} label="Stop" value={stop} format="YYYY-MM-DD HH:mm" />
+              </div>
+          </header>
           <div className="App">
-            <div style={{height: 100}}> </div>
+            <div style={{height: 5}}> </div>
             <TextField id="outlined-basic" label="tx_sign A" style={{width:160}} onChange={(e)=>setTXSignA(e.target.value)} variant="outlined" value={TXSignA} />
             <TextField id="outlined-basic" label="tx_sign B" style={{width:160}} onChange={(e)=>setTXSignB(e.target.value)} variant="outlined" value={TXSignB}/>
             <TextField
@@ -380,30 +336,85 @@ function App() {
               <MenuItem key={3} value="14">14 MHz</MenuItem>
             </TextField>
             <TextField id="outlined-basic" label="number of entries" onChange={(e)=>setNumberOfEntries(e.target.value)} variant="outlined" type="number" value={numberOfEntries}/>
-            <DateTimePicker onChange={(newValue)=>setStart(newValue)} label="Start" value={start} style={{width:100}} format="YYYY-MM-DD HH:mm"/>
-            <DateTimePicker onChange={(newValue)=>setStop(newValue)} label="Stop" value={stop} format="YYYY-MM-DD HH:mm" />
             <Button variant="contained" size="large" style={{height:56}} onClick={submitButton}>🔍</Button>
-            <div style={{height: 20}}> </div>
-            <div style={{borderWidth: "1px", borderStyle:"solid", borderColor:"#666", borderRadius:20, padding: 10, display:"inline-block"}}>
-              <h2>View WSPR Data</h2>
-              <Button variant="contained" onClick={handleClickA} style={{margin:10}}>Transmitter A</Button>
-              <Button variant="contained" onClick={handleClickB} style={{margin:10}}>Transmitter B</Button>
-              <Button variant="contained" onClick={handleClickC} style={{margin:10}}>Comparison</Button>
-            </div>
-            <div style={{height: 20}}> </div>
-            {/* {prmiseNoDataTable(WSPRAPromise,WSPRAData,WSPRAError)||(<MyTable data={WSPRAData.data} meta={WSPRAData.meta} title={TXSignA} />)} */}
-            {/* {prmiseNoDataTable(WSPRBPromise,WSPRBData,WSPRBError)||(<MyTable data={WSPRBData.data} meta={WSPRBData.meta} title={TXSignB} />)} */}
-            {/* {prmiseNoDataTable(WSPRCPromise,WSPRCData,WSPRCError)||(<MyTable data={WSPRCData.data} meta={WSPRCData.meta} title={TXSignC} />)} */}
 
-            {prmiseNoDataMap(WSPRAPromise,WSPRAData,WSPRAError)||(<WSPRMap data={WSPRAData.data} meta={WSPRAData.meta} title={TXSignA}/>)}
-            {prmiseNoDataMap(WSPRBPromise,WSPRBData,WSPRBError)||(<WSPRMap data={WSPRBData.data} meta={WSPRBData.meta} title={TXSignB}/>)}
-            {prmiseNoDataMap(WSPRCPromise,WSPRCData,WSPRCError)||(<WSPRMap data={WSPRCData.data} meta={WSPRCData.meta} title={TXSignC}/>)}
-            <div style={{width:800, display:"inline-block", margin_right:50}}><canvas id="receptions"></canvas></div>
-            <div style={{width:300, display:"inline-block"}}><canvas id="antennaGain"></canvas></div>
+            
 
+            <GridLayout
+              className="layout"
+              layout={[
+                { i: "a", x: 0, y: 1, w: 2, h: 2, static: false },
+                { i: "b", x: 2, y: 1, w: 2, h: 2, static: false },
+                { i: "c", x: 4, y: 1, w: 2, h: 2, static: false },
+                { i: "d", x: 4, y: 3, w: 2, h: 2, static: false },
+                { i: "e", x: 0, y: 3, w: 4, h: 2, static: false },
+                { i: "f", x: 0, y: 0, w: 2, h: 1, static: false },
+                { i: "g", x: 2, y: 0, w: 2, h: 1, static: false },
+                { i: "h", x: 4, y: 0, w: 2, h: 1, static: false },
+                { i: "i", x: 0, y: 5, w: 6, h: 3, static: false },
+              ]}
+              cols={6}
+              rowHeight={160}
+              width={1000}
+            >
+              <div className="PanelContainer" key="a">
+                <div className="PanelHeader">{TXSignA}</div>
+                <div className="PanelContent" onMouseDown={ e => e.stopPropagation() }>
+                  {prmiseNoDataMap(WSPRAPromise,WSPRAData,WSPRAError)||(<WSPRMap data={WSPRAData.data} meta={WSPRAData.meta} title={TXSignA}/>)}
+                </div>
+              </div>
+              <div className="PanelContainer" key="b">
+                <div className="PanelHeader">{TXSignB}</div>
+                <div className="PanelContent" onMouseDown={ e => e.stopPropagation() }>
+                  {prmiseNoDataMap(WSPRBPromise,WSPRBData,WSPRBError)||(<WSPRMap data={WSPRBData.data} meta={WSPRBData.meta} title={TXSignB}/>)}
+                </div>
+              </div>
+              <div className="PanelContainer" key="c">
+                <div className="PanelHeader">Compare</div>
+                <div className="PanelContent" onMouseDown={ e => e.stopPropagation() }>
+                  {prmiseNoDataMap(WSPRCPromise,WSPRCData,WSPRCError)||(<WSPRMap data={WSPRCData.data} meta={WSPRCData.meta} title={TXSignC}/>)}
+                </div>
+              </div>
+              <div className="PanelContainer" key="d">
+                  <div className="PanelHeader">Antenna gain pattern</div>
+                  <div className="PanelContent">
+                    <AntennaGain data={WSPRCData}/>
+                  </div>
+              </div>
+              <div className="PanelContainer" key="e">
+                  <div className="PanelHeader">Receptions difference</div>
+                  <div className="PanelContent">
+                    <div style={{width:"100%", height:"100%"}}><canvas style={{width:"100%", height:"100%"}} id="receptions"></canvas></div>
+                  </div>
+              </div>
+              <div className="PanelContainer" key="f">
+                  <div className="PanelHeader">Data points {TXSignA}</div>
+                  <div className="PanelContent">
+                  <div style={{lineHeight: "120px", color: "green", fontSize:"3em"}}>{WSPRAData&&WSPRAData.data&&WSPRAData.data.length||"No data"}</div>
+                  </div>
+              </div>
+              <div className="PanelContainer" key="g">
+                  <div className="PanelHeader">Data points {TXSignB}</div>
+                  <div className="PanelContent">
+                  <div style={{lineHeight: "120px", color: "green", fontSize:"3em"}}>{WSPRBData&&WSPRBData.data&&WSPRBData.data.length||"No data"}</div>
+                  </div>
+              </div>
+              <div className="PanelContainer" key="h">
+                  <div className="PanelHeader">Data points compare</div>
+                  <div className="PanelContent">
+                    <div style={{lineHeight: "120px", color: "green", fontSize:"3em"}}>{WSPRCData&&WSPRCData.data&&WSPRCData.data.length||"No data"}</div>
+                  </div>
+              </div>
+              <div className="PanelContainer" key="i">
+                  <div className="PanelHeader">Histogram</div>
+                  <div className="PanelContent">
+                    <Histogram data={WSPRCData}/>
+                  </div>
+              </div>
+            </GridLayout>
           </div>
         </div>
-        <BottomBar />
+        <BottomBar data={[WSPRAData,WSPRBData,WSPRCData]} TXSignA={TXSignA} TXSignB={TXSignB}/>
       </ThemeProvider>
     </LocalizationProvider>
   );

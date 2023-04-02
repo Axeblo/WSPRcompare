@@ -7,6 +7,29 @@ function MyTable({data, meta, title}) {
   if(data === undefined || meta === undefined)
     return <>undef</>;
 
+
+  return (
+    <div className="MyTable">
+      <table>
+        <thead>
+        <tr>
+          {meta.map((col, index) => (
+            <th key={index}><b>{col.name}</b></th>
+          ))}
+        </tr>
+        </thead>
+        <tbody>
+          {data.map((row, index) => (
+            <tr key={index}>
+              {row.map((col, index) => (
+                <td key={index}>{col}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
   return (
     <div className="MyTable">
       <h1>{title}</h1>

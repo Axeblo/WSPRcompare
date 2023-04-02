@@ -1,20 +1,7 @@
-.WSPRMap {
-    display:inline-block;
-    margin: 0 10px 10px 10px;
 
-    border: 2px solid rgb(56, 56, 56);
-    padding: 20px;
-    border-radius: 20px;
-    background-color: rgb(25, 25, 25);
-
-    animation: myShow 1s ease-in-out;
-}
-.WSPRMap h1 {
-    margin-top: 0;
-}
 .WSPRMapContainer {
-    height: 350px;
-    width: 350px;
+    height: 100%;
+    width: 100%;
     background-color: black;
 }
 
