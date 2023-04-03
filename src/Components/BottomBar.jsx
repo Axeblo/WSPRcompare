@@ -1,28 +1,14 @@
-import './BottomBar.css';
-import './App.css';
+import '../styles/BottomBar.css';
 
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 
-import MyTable from './MyTable';
+import MyTable from './DataTable';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
-function prmiseNoDataTable(WSPRPromise,WSPRData,WSPRError) {
-    if(!WSPRPromise)
-      return <div className="loading_table">No data 😓</div>;
-    if(!WSPRData) {
-      if(!WSPRError)
-        return <div className="loading_table"><div className="lds-dual-ring"></div></div>;
-      else
-        return <h1>Error...</h1>;
-    }
-    if(!WSPRError)
-      return "";
-  }
 
-function BottomBar({data,TXSignA,TXSignB}) {
+function BottomBar({data,TXSignA,TXSignB, close}) {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const handleTabChange = (event, newValue) => {
@@ -39,6 +25,11 @@ function BottomBar({data,TXSignA,TXSignB}) {
             <Tab label="Compare" />
           </Tabs>
           {data&&data[selectedTab]&&(<MyTable data={data[selectedTab].data} meta={data[selectedTab].meta}/>)}
+          <Button
+            className="myButton"
+            variant="contained"
+            style={{position:"absolute", top:10, right:10, width:10, height:30, minWidth:10}}
+            onClick={close}>✕</Button>
     </div>);
 }
 

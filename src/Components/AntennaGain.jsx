@@ -1,15 +1,12 @@
-import './AntennaGain.css'
+import '../styles/AntennaGain.css'
 
 import React, {useEffect, useState} from "react";
-
 import Chart from 'chart.js/auto'
 
 function AntennaGain({data}) {
-
     const [antennaGainChart,setAntennaGainChart]  = useState(null);
 
     useEffect(()=>{
-
         if(!data) return;
         if(!data.data) return;
 
@@ -36,17 +33,41 @@ function AntennaGain({data}) {
             labels: labels,
             datasets: [
                 {
-                label: 'SNR difference',
+                label: "SNR Difference",
                 data: buckets
                 }
             ]
             },
             options: {
-            scale: {
-                min: -10
+                scale: {
+                    min: -10,
+                },
+                scales: {
+                    r: {
+                        ticks: {
+                          color: 'transparent',
+                          backdropColor: 'transparent'
+                        },
+                        grid: {
+                          color: '#ffffff33',
+                          circular: true
+                        },
+                        angleLines: {
+                            color: '#ffffff33'
+                        }
+                    }
+                },
+                plugins:{
+                    legend: {
+                        position: "right",
+                        align: "middle",
+                        display: false
+                    },
+                },
+                maintainAspectRatio: false,
+                responsive: true,
             },
         },
-        }
         );
         setAntennaGainChart(chart);
     },[data]);
