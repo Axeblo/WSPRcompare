@@ -1,25 +1,25 @@
-.DataTable {
+.SimpleTable {
     overflow-y: auto;
     height: 100%;
     font-size: .8em;
     animation: myShow 1s;
 }
 
-.DataTable table {
+.SimpleTable table {
     border-collapse: collapse;
     width: 100%;
 }
 
 
-.DataTable tbody {
+.SimpleTable tbody {
     width: 100%;
     height: 20px;
 }
 
-.DataTable tr {
+.SimpleTable tr {
     width: 100%;
 }
-.DataTable td {
+.SimpleTable td {
     margin: 2px 40px;
     border: 1px solid #4b4b4b;
 }

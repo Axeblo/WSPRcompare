@@ -5,6 +5,7 @@ body {
   background-color:#111217;
   color: rgb(204, 204, 220);
   font-family: Roboto;
+  position:relative;
 }
 
 @media (prefers-color-scheme: light) {

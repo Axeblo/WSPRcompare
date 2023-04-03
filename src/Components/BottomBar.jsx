@@ -2,34 +2,42 @@ import '../styles/BottomBar.css';
 
 import React, {useState} from 'react';
 
-import MyTable from './DataTable';
+import SimpleTable from './SimpleTable';
+import ComplicatedTable from './ComplicatedTable';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Button from '@mui/material/Button';
+import CloseIcon from '@mui/icons-material/Close';
 
 
-function BottomBar({data,TXSignA,TXSignB, close}) {
+function BottomBar({datasets, close}) {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const handleTabChange = (event, newValue) => {
       setSelectedTab(newValue);
     };
-  
-    console.log(data);
+
+    if(!datasets) {
+      return <p>No datasets</p>;
+    }
 
     return (
     <div className="BottomBar">
-          <Tabs value={selectedTab} onChange={handleTabChange} indicatorColor="primary" textColor="primary" centered>
-            <Tab label={TXSignA} />
-            <Tab label={TXSignB} />
-            <Tab label="Compare" />
+          <Tabs
+            value={selectedTab}
+            onChange={handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            centered>
+            {datasets.map((tab,index)=>(<Tab key={index} label={tab.name}/>))}
           </Tabs>
-          {data&&data[selectedTab]&&(<MyTable data={data[selectedTab].data} meta={data[selectedTab].meta}/>)}
+          {!datasets[selectedTab].dataTable&&(<p>No data 😓</p>)}
+          {/* {datasets[selectedTab].dataTable&&(<SimpleTable dataTable={datasets[selectedTab].dataTable}/>)} */}
+          {datasets[selectedTab].dataTable&&(<ComplicatedTable dataTable={datasets[selectedTab].dataTable}/>)}
           <Button
-            className="myButton"
+            className="MyButton"
             variant="contained"
-            style={{position:"absolute", top:10, right:10, width:10, height:30, minWidth:10}}
-            onClick={close}>✕</Button>
+            onClick={close}><CloseIcon/></Button>
     </div>);
 }
 

@@ -1,0 +1,7 @@
+.MuiDataGrid-root {
+  font-size: 0.8em !important;
+}
+
+.MuiDataGrid-panelWrapper  {
+    height: 250px;
+}

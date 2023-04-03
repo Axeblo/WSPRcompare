@@ -7,7 +7,7 @@
 }
 
 .MainPanel {
-  height: calc(100vh - 300px);
+  height: calc(100vh - 400px);
   width: 100%;
   overflow: auto;
   margin: 0;
@@ -58,6 +58,10 @@
 
 .read-the-docs {
   color: #888;
+}
+.DateTimePicker .MuiInputBase-input {
+  width: 140px;
+  padding: 10px !important;
 }
 
 .lds-dual-ring {

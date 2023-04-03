@@ -1,54 +1,78 @@
+import "../styles/ReceptionBarGraph.css";
+
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+
 import React, { useEffect, useState } from 'react';
 import Chart from 'chart.js/auto';
 import dayjs from 'dayjs';
 
-function ReceptionBarGraph({data}) {
+function ReceptionBarGraph({dataset}) {
 	const [chart, setChart] = useState(null);
+	const [selectDataset, setSelectDataset] = useState(0);
 
     //Every time data changes, update the chart
 	useEffect(() => {
-		if (!data)
-			return;
+		if( !dataset ) return;
 
-		if (chart) chart.destroy();
-		setChart(null);
+		if (chart !== null){
+			chart.destroy();
+			setChart(null);
+		}
 
-		var chart = new Chart(
-			document.getElementById('receptions'),
+		var dataTable = dataset[selectDataset].dataTable;
+		
+		var newChart = new Chart(
+			document.getElementById('ReceptionBarGraphHande'),
 			{
 				type: 'bar',
 				data: {
-					labels: data.data.map(row => dayjs(row[1]).format("DD/MM HH:MM")),
+					labels: dataTable.data.map(row => dayjs(row[1]).format("DD/MM HH:mm")),
 					datasets: [
 						{
 							label: 'SNR difference',
-							data: data.data.map(row => row[16])
+							data: dataTable.data.map(row => row[16])
 						}
 					]
 				},
 				options: {
 					scales: {
 						x: {
-						grid: {
-							display: true,
-							color: '#ffffff22',
-						},
+							grid: {
+								display: true,
+								color: '#ffffff22',
+							},
 						},
 						y: {
-						grid: {
-							display: true,
-							color: '#ffffff22',
-						},
-						},
+							grid: {
+								display: true,
+								color: '#ffffff22',
+							},
+						}
 					},
+
+                    maintainAspectRatio: false,
+                    responsive: true,
 				},
 			}
 		);
-		setChart(chart);
+		setChart(newChart);
 
-	}, [data]);
+	}, [selectDataset, dataset]);
 
-    return <div style={{width:"100%", height:"100%"}}><canvas style={{width:"100%", height:"100%"}} id="receptions"></canvas></div>
+    return (
+	<div className="ReceptionBarGraph">
+		<TextField
+			value={selectDataset}
+			onChange={(e) => setSelectDataset(e.target.value)}
+			select
+			label="Data set"
+			size="small"
+			style={{width: "120px", position:"absolute", top: 16, right:10}} >
+			{dataset.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
+		</TextField>
+		<canvas id="ReceptionBarGraphHande"></canvas>
+</div>);
 }
 
 export default ReceptionBarGraph;

@@ -12,6 +12,7 @@ import React, { useState, useEffect } from 'react';
 //Helper functions
 import resolvePromise from './resolvePromise';
 import promiseNoData from './promiseNoData';
+
 import compare from './compare';
 import getJSONWithParameters from './apiFunctions';
 
@@ -21,7 +22,7 @@ import WSPRMap from './Components/WSPRMap';
 import Histogram from './Components/Histogram';
 import AntennaGain from './Components/AntennaGain';
 import ReceptionBarGraph from './Components/ReceptionBarGraph';
-import NumberOfReceptionsGraph from './Components/NumberOfReceptionsGraph';
+import ReceptionsOverTime from './Components/ReceptionsOverTime';
 
 //MUI
 import Button from '@mui/material/Button';
@@ -31,6 +32,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import SearchIcon from '@mui/icons-material/Search';
 
 //Misc
 import GridLayout from "react-grid-layout";
@@ -60,7 +62,7 @@ function App() {
 	const [numberOfEntries, setNumberOfEntries] = useState(2000);
 	const [numberOfEntriesTemp, setNumberOfEntriesTemp] = useState(2000);
 
-	const [showBottomBar, setShowBottomBar] = useState(true);
+	const [showBottomBar, setShowBottomBar] = useState(false);
 
 	function submitButton(e) {
 		setStart(startTemp);
@@ -117,28 +119,63 @@ function App() {
 		<LocalizationProvider dateAdapter={AdapterDayjs}>
 			<ThemeProvider theme={theme}>
 				<div className={"MainPanel "+((!showBottomBar)&&"fullHeight")}>
-					<header style={{ height: 70, width: "100%", textAlign: "right", paddingTop: 10 }}>
+					<header style={{ height: 54, width: "100%", textAlign: "right", paddingTop: 10 }}>
 						<div className="Wrapper" style={{ maxWidth: 1000, margin: "0 auto" }}>
-							<DateTimePicker onChange={(newValue) => setStartTemp(newValue)} label="Start" value={startTemp} format="YYYY-MM-DD HH:mm" />
-							<DateTimePicker onChange={(newValue) => setStopTemp(newValue)} label="Stop" value={stopTemp} format="YYYY-MM-DD HH:mm" />
+							<DateTimePicker
+								className="DateTimePicker"
+								onChange={(newValue) => setStartTemp(newValue)}
+								label="Start" value={startTemp}
+								format="YYYY-MM-DD HH:mm" />
+							<div style={{display:"inline-block", width: 10}}></div>
+							<DateTimePicker
+							className="DateTimePicker"
+								onChange={(newValue) => setStopTemp(newValue)}
+								label="Stop" value={stopTemp}
+								format="YYYY-MM-DD HH:mm" />
 						</div>
 					</header>
 					<div className="App ">
-						<TextField id="outlined-basic" label="tx_sign A" style={{ width: 160 }} onChange={(e) => setTXSignA(e.target.value)} variant="outlined" value={TXSignA} />
-						<TextField id="outlined-basic" label="tx_sign B" style={{ width: 160 }} onChange={(e) => setTXSignB(e.target.value)} variant="outlined" value={TXSignB} />
+						<TextField
+							id="outlined-basic"
+							label="tx_sign A"
+							style={{ width: 160 }}
+							onChange={(e) => setTXSignA(e.target.value)}
+							variant="outlined"
+							value={TXSignA}
+							size="small" />
+						<div style={{display:"inline-block", width: 10}}></div>
+						<TextField
+							id="outlined-basic"
+							label="tx_sign B"
+							style={{ width: 160 }}
+							onChange={(e) => setTXSignB(e.target.value)}
+							variant="outlined"
+							value={TXSignB}
+							size="small" />
+							<div style={{display:"inline-block", width: 10}}></div>
 						<TextField
 							value={band}
 							onChange={(e) => setBand(e.target.value)}
 							select
 							label="Band"
 							style={{ width: 120 }}
+							size="small"
 						>
 							<MenuItem key={1} value="7">7 MHz</MenuItem>
 							<MenuItem key={2} value="10">10 MHz</MenuItem>
 							<MenuItem key={3} value="14">14 MHz</MenuItem>
 						</TextField>
-						<TextField id="outlined-basic" label="number of entries" onChange={(e) => setNumberOfEntriesTemp(e.target.value)} variant="outlined" type="number" value={numberOfEntriesTemp} />
-						<Button variant="contained" size="large" style={{ height: 56 }} onClick={submitButton}>🔍</Button>
+						<div style={{display:"inline-block", width: 10}}></div>
+						<TextField
+							id="outlined-basic"
+							label="number of entries"
+							onChange={(e) => setNumberOfEntriesTemp(e.target.value)}
+							variant="outlined"
+							type="number"
+							value={numberOfEntriesTemp}
+							size="small" />
+							<div style={{display:"inline-block", width: 10}}></div>
+						<Button variant="contained" size="medium" style={{ height: 40 }} onClick={submitButton}><SearchIcon/></Button>
 
 						<GridLayout
 							className="layout"
@@ -180,19 +217,19 @@ function App() {
 							<div className="PanelContainer" key="a">
 								<div className="PanelHeader">{TXSignA}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRAPromiseState) || <WSPRMap data={WSPRAPromiseState.data.data} meta={WSPRAPromiseState.data.meta} title={TXSignA} />}
+									{promiseNoData(WSPRAPromiseState) || <WSPRMap dataset={{dataTable:WSPRAPromiseState.data, name:TXSignA}} />}
 								</div>
 							</div>
 							<div className="PanelContainer" key="b">
 								<div className="PanelHeader">{TXSignB}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRBPromiseState) || <WSPRMap data={WSPRBPromiseState.data.data} meta={WSPRBPromiseState.data.meta} title={TXSignB} />}
+									{promiseNoData(WSPRBPromiseState) || <WSPRMap dataset={{dataTable:WSPRBPromiseState.data, name:TXSignB}} />}
 								</div>
 							</div>
 							<div className="PanelContainer" key="c">
 								<div className="PanelHeader">Compare</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <WSPRMap data={WSPRCPromiseState.data.data} meta={WSPRCPromiseState.data.meta} title={TXSignC} />}
+									{promiseNoData(WSPRCPromiseState) || <WSPRMap dataset={{dataTable:WSPRCPromiseState.data, name:TXSignC}} />}
 								</div>
 							</div>
 							<div className="PanelContainer" key="d">
@@ -202,27 +239,51 @@ function App() {
 								</div>
 							</div>
 							<div className="PanelContainer" key="e">
-								<div className="PanelHeader">Receptions difference</div>
+								<div className="PanelHeader">List of receptions</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <ReceptionBarGraph data={WSPRCPromiseState.data} />}
+									{promiseNoData(WSPRCPromiseState) || <ReceptionBarGraph dataset={
+																					[
+																						{dataTable:WSPRCPromiseState.data, name:"Compare"},
+																						{dataTable:WSPRAPromiseState.data, name:TXSignA},
+																						{dataTable:WSPRBPromiseState.data, name:TXSignB},
+																					]} dataTable={WSPRCPromiseState.data} />}
 								</div>
 							</div>
 							<div className="PanelContainer" key="i">
 								<div className="PanelHeader">Histogram</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState)|| <Histogram data={WSPRCPromiseState.data} />}
+									{promiseNoData(WSPRCPromiseState) || <Histogram dataset={
+																					[
+																						{dataTable:WSPRCPromiseState.data, name:"Compare"},
+																						{dataTable:WSPRAPromiseState.data, name:TXSignA},
+																						{dataTable:WSPRBPromiseState.data, name:TXSignB},
+																					]} />}
 								</div>
 							</div>
 							<div className="PanelContainer" key="j">
 								<div className="PanelHeader">Number of receptions over time</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState)|| <NumberOfReceptionsGraph data={[WSPRAPromiseState.data, WSPRBPromiseState.data, WSPRCPromiseState.data]} start={start} stop={stop} titles={[TXSignA,TXSignB,TXSignC]} />}
+									{promiseNoData(WSPRCPromiseState) || <ReceptionsOverTime dataset={
+																					[
+																						{dataTable:WSPRAPromiseState.data, name:TXSignA},
+																						{dataTable:WSPRBPromiseState.data, name:TXSignB},
+																						{dataTable:WSPRCPromiseState.data, name:"Compare"},
+																					]} start={start} stop={stop} />}
 								</div>
 							</div>
 						</GridLayout>
 					</div>
 				</div>
-				{showBottomBar&&<BottomBar data={[WSPRAPromiseState.data, WSPRBPromiseState.data, WSPRCPromiseState.data]} TXSignA={TXSignA} TXSignB={TXSignB} close={()=>setShowBottomBar(false)} />}
+				{showBottomBar&&(
+					<BottomBar
+					datasets={
+						[
+							{dataTable:WSPRAPromiseState.data, name:TXSignA},
+							{dataTable:WSPRBPromiseState.data, name:TXSignB},
+							{dataTable:WSPRCPromiseState.data, name:"Compare"},
+						]
+					}
+					close={()=>setShowBottomBar(false)} />)}
 				{!showBottomBar&&<Button style={{position:"absolute",bottom:0,right:20}} onClick={()=>setShowBottomBar(true)}>Show data panel</Button>}
 			</ThemeProvider>
 		</LocalizationProvider>
