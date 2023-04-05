@@ -2,19 +2,26 @@ import { MapContainer, TileLayer, Marker, CircleMarker, Popup } from "react-leaf
 import '../styles/WSPRMap.css';
 import { LeafletMap } from "leaflet";
 
-function WSPRMap({ dataTable }) {
-	if (!dataTable)
-		return <>No dataTable in dataset</>;
+function WSPRMap({ dataset, datasetIndex, dataTable }) {
+	//if (!dataTable)
+	//	return <>No dataTable in dataset</>;
+	//if( !dataTable.data )
+	//	return <>No data in dataTable</>;
+	//if(	!dataTable.meta )
+	//	return <>No metadata in dataTable</>;
 
-	if( !dataTable.data )
-		return <>No data in dataTable</>;
-	if(	!dataTable.meta )
-		return <>No metadata in dataTable</>;
+	var selectedDataTable = null;
+
+	if( dataset && dataset[datasetIndex] && dataset[datasetIndex].dataTable )
+		selectedDataTable = dataset[datasetIndex].dataTable;
+	
+	var selectedDataTable = dataTable;
 	
 	var center = [0,0];
-	if( dataTable.data[0] )
-		center = [dataTable.data[0][8], dataTable.data[0][9]];
-
+	
+	if( selectedDataTable && selectedDataTable.data && selectedDataTable.data[0] )
+		center = [selectedDataTable.data[0][8], selectedDataTable.data[0][9]];
+	// console.log(`WSPRMap render, datasetIndex ${datasetIndex} selectedDataTable ${selectedDataTable.data[0]}`);
 	return (
 		<MapContainer
 			className="WSPRMapContainer"
@@ -29,7 +36,7 @@ function WSPRMap({ dataTable }) {
 				attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
 				url='http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'
 			/>
-			{dataTable.data[0]&&(<CircleMarker
+			{selectedDataTable&&selectedDataTable.data&&selectedDataTable.data[0]&&(<CircleMarker
 				center={center}
 				radius="3"
 				border="2"
@@ -37,10 +44,10 @@ function WSPRMap({ dataTable }) {
 				fillColor="#ff000088"
 				color="#ff0000bb">
 				<Popup>
-					{dataTable.data[0][7]}
+					{selectedDataTable.data[0][7]}
 				</Popup>
 			</CircleMarker>)}
-			{dataTable.data.map((row) => (
+			{selectedDataTable&&selectedDataTable.data&&selectedDataTable.data.map((row) => (
 				<CircleMarker
 					center={[row[4], row[5]]}
 					key={row[0]}

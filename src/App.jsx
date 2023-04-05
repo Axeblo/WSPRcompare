@@ -19,6 +19,7 @@ import getJSONWithParameters from './apiFunctions';
 //My components
 import BottomBar from './Components/BottomBar';
 import WSPRMap from './Components/WSPRMap';
+import MapOpenLayers from './Components/MapOpenLayers';
 import Histogram from './Components/Histogram';
 import NewHistogram from './Components/NewHistogram';
 import AntennaGain from './Components/AntennaGain';
@@ -231,19 +232,26 @@ function App() {
 							<div className="PanelContainer" key="MapA">
 								<div className="PanelHeader">{TXSignA}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRAPromiseState) || <WSPRMap dataTable={WSPRAPromiseState.data} />}
+									<MapOpenLayers dataset={dataset} datasetIndex={0} />
+									{/* {promiseNoData(WSPRCPromiseState)|| <MapOpenLayers dataset={dataset} datasetIndex={0} />} */}
+									{/* {promiseNoData(WSPRAPromiseState) || <WSPRMap dataset={dataset} datasetIndex={0} dataTable={WSPRAPromiseState.data} />} */}
+									{/* <WSPRMap dataset={dataset} datasetIndex={0} dataTable={WSPRAPromiseState.data} /> */}
 								</div>
 							</div>
 							<div className="PanelContainer" key="MapB">
 								<div className="PanelHeader">{TXSignB}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRBPromiseState) || <WSPRMap dataTable={WSPRBPromiseState.data} />}
+									{/* <MapOpenLayers dataset={dataset} datasetIndex={1} /> */}
+									{promiseNoData(WSPRBPromiseState) || <WSPRMap dataset={dataset} datasetIndex={1} dataTable={WSPRBPromiseState.data} />}
+									{/* <WSPRMap dataset={dataset} datasetIndex={1} dataTable={WSPRCPromiseState.data} /> */}
 								</div>
 							</div>
 							<div className="PanelContainer" key="MapC">
 								<div className="PanelHeader">Compare</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <WSPRMap dataTable={WSPRCPromiseState.data} />}
+									{/* <MapOpenLayers dataset={dataset} datasetIndex={2} /> */}
+									{promiseNoData(WSPRCPromiseState) || <WSPRMap dataset={dataset} datasetIndex={2} 
+									{/* <WSPRMap dataset={dataset} datasetIndex={2} dataTable={WSPRCPromiseState.data} /> */}
 								</div>
 							</div>
 							<div className="PanelContainer" key="GainPattern">
