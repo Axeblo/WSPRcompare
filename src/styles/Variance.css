@@ -1,0 +1,24 @@
+.VarianceSettingsButton {
+    position: absolute !important;
+    top: 2px;
+    right: 2px;
+
+    inset: auto auto 0 0;
+
+
+    width: 30px !important;
+    min-width: 30px !important;
+    width: 30px !important;
+}
+
+.VarianceNumber {
+    line-height: 100px;
+    color: green;
+    font-size: 3em;
+    display: inline-block;
+    width: 100%;
+
+    overflow: hidden;
+
+    text-overflow:ellipsis;
+}

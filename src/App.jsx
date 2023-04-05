@@ -20,9 +20,15 @@ import getJSONWithParameters from './apiFunctions';
 import BottomBar from './Components/BottomBar';
 import WSPRMap from './Components/WSPRMap';
 import Histogram from './Components/Histogram';
+import NewHistogram from './Components/NewHistogram';
 import AntennaGain from './Components/AntennaGain';
+import NewAntennaGain from './Components/NewAntennaGain';
 import ReceptionBarGraph from './Components/ReceptionBarGraph';
 import ReceptionsOverTime from './Components/ReceptionsOverTime';
+import Mean from './Components/Mean';
+import EntriesCounter from './Components/EntriesCounter';
+import Variance from './Components/Variance';
+import StandardDeviation from './Components/StandardDeviation';
 
 //MUI
 import Button from '@mui/material/Button';
@@ -54,17 +60,20 @@ function App() {
 	const [WSPRCError, setWSPRCError] = useState(null);
 	const [TXSignC, setTXSignC] = useState("Compare");
 
-	const [band, setBand] = useState(10);
-	const [start, setStart] = useState(dayjs('2022-06-03 13:24'));
-	const [startTemp, setStartTemp] = useState(dayjs('2022-06-03 13:24'));
-	const [stop, setStop] = useState(dayjs('2022-06-03 16:28'));
-	const [stopTemp, setStopTemp] = useState(dayjs('2022-06-03 16:28'));
-	const [numberOfEntries, setNumberOfEntries] = useState(2000);
-	const [numberOfEntriesTemp, setNumberOfEntriesTemp] = useState(2000);
+	const [dataset, setDataset] = useState(null);
 
-	const [showBottomBar, setShowBottomBar] = useState(false);
+	const [band, setBand] = useState(10);
+	const [start, setStart] = useState(dayjs('2022-06-03 14:00'));
+	const [startTemp, setStartTemp] = useState(dayjs('2022-06-03 14:00'));
+	const [stop, setStop] = useState(dayjs('2022-06-03 16:00'));
+	const [stopTemp, setStopTemp] = useState(dayjs('2022-06-03 16:00'));
+	const [numberOfEntries, setNumberOfEntries] = useState(10000);
+	const [numberOfEntriesTemp, setNumberOfEntriesTemp] = useState(10000);
+
+	const [showBottomBar, setShowBottomBar] = useState(true);
 
 	function submitButton(e) {
+		setDataset(null);
 		setStart(startTemp);
 		setStop(stopTemp);
 		setNumberOfEntries(numberOfEntriesTemp);
@@ -105,6 +114,11 @@ function App() {
 			setWSPRCData(tempCPromiseState["data"]);
 			setWSPRCError(tempCPromiseState["error"]);
 			setWSPRCPromiseState(tempCPromiseState);
+			setDataset([
+						{dataTable:WSPRAPromiseState.data, name:TXSignA},
+						{dataTable:WSPRBPromiseState.data, name:TXSignB},
+						{dataTable:tempCPromiseState.data, name:"Compare"},
+					]);
 		});
 	}, [WSPRAData, WSPRBData]);
 
@@ -119,6 +133,7 @@ function App() {
 		<LocalizationProvider dateAdapter={AdapterDayjs}>
 			<ThemeProvider theme={theme}>
 				<div className={"MainPanel "+((!showBottomBar)&&"fullHeight")}>
+					{/* <div className="title">WSPR Compare</div> */}
 					<header style={{ height: 54, width: "100%", textAlign: "right", paddingTop: 10 }}>
 						<div className="Wrapper" style={{ maxWidth: 1000, margin: "0 auto" }}>
 							<DateTimePicker
@@ -164,111 +179,113 @@ function App() {
 							<MenuItem key={1} value="7">7 MHz</MenuItem>
 							<MenuItem key={2} value="10">10 MHz</MenuItem>
 							<MenuItem key={3} value="14">14 MHz</MenuItem>
+							<MenuItem key={3} value="21">21 MHz</MenuItem>
+							<MenuItem key={3} value="24">24 MHz</MenuItem>
+							<MenuItem key={3} value="28">28 MHz</MenuItem>
 						</TextField>
 						<div style={{display:"inline-block", width: 10}}></div>
-						<TextField
-							id="outlined-basic"
-							label="number of entries"
-							onChange={(e) => setNumberOfEntriesTemp(e.target.value)}
-							variant="outlined"
-							type="number"
-							value={numberOfEntriesTemp}
-							size="small" />
-							<div style={{display:"inline-block", width: 10}}></div>
 						<Button variant="contained" size="medium" style={{ height: 40 }} onClick={submitButton}><SearchIcon/></Button>
-
+						{/* <NewHistogram dataset={dataset}/> */}
 						<GridLayout
 							className="layout"
 							layout={[
-								{ i: "a", x: 0, y: 1, w: 2, h: 2, static: false },
-								{ i: "b", x: 2, y: 1, w: 2, h: 2, static: false },
-								{ i: "c", x: 4, y: 1, w: 2, h: 2, static: false },
-								{ i: "d", x: 4, y: 3, w: 2, h: 2, static: false },
-								{ i: "e", x: 0, y: 3, w: 4, h: 2, static: false },
-								{ i: "f", x: 0, y: 0, w: 2, h: 1, static: false },
-								{ i: "g", x: 2, y: 0, w: 2, h: 1, static: false },
-								{ i: "h", x: 4, y: 0, w: 2, h: 1, static: false },
-								{ i: "i", x: 0, y: 5, w: 3, h: 2, static: false },
-								{ i: "j", x: 3, y: 5, w: 3, h: 2, static: false },
+								{ i: "DatapointsA", x: 0, y: 0, w: 2, h: 1, static: false },
+								{ i: "DatapointsB", x: 2, y: 0, w: 2, h: 1, static: false },
+								{ i: "DatapointsC", x: 4, y: 0, w: 2, h: 1, static: false },
+								{ i: "MapA", 		x: 0, y: 1, w: 2, h: 2, static: false },
+								{ i: "MapB", 		x: 2, y: 1, w: 2, h: 2, static: false },
+								{ i: "MapC", 		x: 4, y: 1, w: 2, h: 2, static: false },
+								{ i: "GainPattern", x: 4, y: 3, w: 2, h: 2, static: false },
+								{ i: "BarGraph", 	x: 0, y: 3, w: 4, h: 2, static: false },
+								{ i: "Histogram", 	x: 0, y: 5, w: 3, h: 2, static: false },
+								{ i: "j", 			x: 3, y: 5, w: 3, h: 2, static: false },
+								{ i: "k", 			x: 3, y: 5, w: 3, h: 2, static: false },
+								{ i: "Mean", 		x: 0, y: 7, w: 1, h: 1, static: false },
+								{ i: "Variance", 	x: 1, y: 7, w: 1, h: 1, static: false },
+								{ i: "SD", 			x: 2, y: 7, w: 1, h: 1, static: false },
+
 							]}
 							cols={6}
 							rowHeight={140}
 							width={1000}
 							onResize={()=>window.dispatchEvent(new Event('resize'))}
 						>
-							<div className="PanelContainer" key="f">
+							<div className="PanelContainer" key="DatapointsA">
 								<div className="PanelHeader">Data points {TXSignA}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									<div style={{ lineHeight: "100px", color: "green", fontSize: "3em" }}>{WSPRAData && WSPRAData.data && WSPRAData.data.length || "No data"}</div>
+									<EntriesCounter dataTable={WSPRAData} />
 								</div>
 							</div>
-							<div className="PanelContainer" key="g">
+							<div className="PanelContainer" key="DatapointsB">
 								<div className="PanelHeader">Data points {TXSignB}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									<div style={{ lineHeight: "100px", color: "green", fontSize: "3em" }}>{WSPRBData && WSPRBData.data && WSPRBData.data.length || "No data"}</div>
+									<EntriesCounter dataTable={WSPRBData} />
 								</div>
 							</div>
-							<div className="PanelContainer" key="h">
+							<div className="PanelContainer" key="DatapointsC">
 								<div className="PanelHeader">Data points compare</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									<div style={{ lineHeight: "100px", color: "green", fontSize: "3em" }}>{WSPRCData && WSPRCData.data && WSPRCData.data.length || "No data"}</div>
+									<EntriesCounter dataTable={WSPRCData} />
 								</div>
 							</div>
-							<div className="PanelContainer" key="a">
+							<div className="PanelContainer" key="MapA">
 								<div className="PanelHeader">{TXSignA}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRAPromiseState) || <WSPRMap dataset={{dataTable:WSPRAPromiseState.data, name:TXSignA}} />}
+									{promiseNoData(WSPRAPromiseState) || <WSPRMap dataTable={WSPRAPromiseState.data} />}
 								</div>
 							</div>
-							<div className="PanelContainer" key="b">
+							<div className="PanelContainer" key="MapB">
 								<div className="PanelHeader">{TXSignB}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRBPromiseState) || <WSPRMap dataset={{dataTable:WSPRBPromiseState.data, name:TXSignB}} />}
+									{promiseNoData(WSPRBPromiseState) || <WSPRMap dataTable={WSPRBPromiseState.data} />}
 								</div>
 							</div>
-							<div className="PanelContainer" key="c">
+							<div className="PanelContainer" key="MapC">
 								<div className="PanelHeader">Compare</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <WSPRMap dataset={{dataTable:WSPRCPromiseState.data, name:TXSignC}} />}
+									{promiseNoData(WSPRCPromiseState) || <WSPRMap dataTable={WSPRCPromiseState.data} />}
 								</div>
 							</div>
-							<div className="PanelContainer" key="d">
+							<div className="PanelContainer" key="GainPattern">
 								<div className="PanelHeader">Antenna gain pattern</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <AntennaGain data={WSPRCPromiseState.data} />}
+									{promiseNoData(WSPRCPromiseState) || <AntennaGain dataTable={WSPRCPromiseState.data} />}
 								</div>
 							</div>
-							<div className="PanelContainer" key="e">
+							<div className="PanelContainer" key="BarGraph">
 								<div className="PanelHeader">List of receptions</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <ReceptionBarGraph dataset={
-																					[
-																						{dataTable:WSPRCPromiseState.data, name:"Compare"},
-																						{dataTable:WSPRAPromiseState.data, name:TXSignA},
-																						{dataTable:WSPRBPromiseState.data, name:TXSignB},
-																					]} dataTable={WSPRCPromiseState.data} />}
+									{promiseNoData(WSPRCPromiseState) || <ReceptionBarGraph dataset={dataset} />}
 								</div>
 							</div>
-							<div className="PanelContainer" key="i">
+							<div className="PanelContainer" key="Histogram">
 								<div className="PanelHeader">Histogram</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <Histogram dataset={
-																					[
-																						{dataTable:WSPRCPromiseState.data, name:"Compare"},
-																						{dataTable:WSPRAPromiseState.data, name:TXSignA},
-																						{dataTable:WSPRBPromiseState.data, name:TXSignB},
-																					]} />}
+									{promiseNoData(WSPRCPromiseState) || <Histogram dataset={dataset} />}
 								</div>
 							</div>
 							<div className="PanelContainer" key="j">
 								<div className="PanelHeader">Number of receptions over time</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <ReceptionsOverTime dataset={
-																					[
-																						{dataTable:WSPRAPromiseState.data, name:TXSignA},
-																						{dataTable:WSPRBPromiseState.data, name:TXSignB},
-																						{dataTable:WSPRCPromiseState.data, name:"Compare"},
-																					]} start={start} stop={stop} />}
+									{promiseNoData(WSPRCPromiseState) || <ReceptionsOverTime dataset={dataset} start={start} stop={stop} />}
+								</div>
+							</div>
+							<div className="PanelContainer" key="Mean">
+								<div className="PanelHeader">Mean</div>
+								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+									{promiseNoData(WSPRCPromiseState) || <Mean dataset={dataset}/>}
+								</div>
+							</div>
+							<div className="PanelContainer" key="Variance">
+								<div className="PanelHeader">Variance</div>
+								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+									{promiseNoData(WSPRCPromiseState) || <Variance dataset={dataset}/>}
+								</div>
+							</div>
+							<div className="PanelContainer" key="SD">
+								<div className="PanelHeader">Standard deviation</div>
+								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+									{promiseNoData(WSPRCPromiseState) || <StandardDeviation dataset={dataset}/>}
 								</div>
 							</div>
 						</GridLayout>

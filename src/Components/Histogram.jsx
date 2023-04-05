@@ -18,14 +18,13 @@ function Histogram({ dataset }) {
     const [filterOptions, setFilterOptions] = useState(["*"]);
     const [column, setColumn] = useState(16);
     const [incompatibleData, setIncompatibleData] = useState(false);
-    const [selectDataset, setSelectDataset] = useState(0);
+    const [selectDataset, setSelectDataset] = useState(2);
     
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     useEffect(() => {
         if (!dataset[selectDataset] || !dataset[selectDataset].dataTable) return;
         if (histogram) histogram.destroy();
-        setHistogram(null);
 
         var incompatible = false;
         dataset[selectDataset].dataTable.data.forEach(row => { if (typeof(row[column]) !== 'number') incompatible = true;});
@@ -157,6 +156,7 @@ function Histogram({ dataset }) {
                 <div style={{width:10, display:"inline-block"}}/>
                 <Button
                     variant="outlined"
+                    disabled
                     onClick={(e)=>setAnchorEl(e.currentTarget)}
                     style={{height:"40px", minWidth:"40px", width:"40px"}}><FilterAltIcon/></Button>
                 <Popover

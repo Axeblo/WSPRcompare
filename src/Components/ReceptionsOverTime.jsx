@@ -11,23 +11,32 @@ function ReceptionsOverTime({dataset, start, stop}) {
     //Every time data changes, update the chart
 	useEffect(() => {
 		if (!dataset)
-			return;
+		return;
 
         var labels = [];
-        for (var i = start; i < stop; i = i.add(2, 'minutes'))
-            labels.push(dayjs(i).format("DD/MM HH:mm"));
-        
-		var output = [];
-		var counter = 0;
-		dataset.forEach((row, index) => {
-			var temp = [];
 
+        for (var i = start; i <= stop; i = i.add(2, 'minutes'))
+			labels.push(dayjs(i).format("DD/MM HH:mm"));
+    
+
+		var output = [];
+
+		dataset.forEach((row, index) => {
+			var temp = new Array(labels.length).fill(0);
+
+			row.dataTable.data.forEach((row, index) => {
+				var date = dayjs(row[1]);
+				var i = date.diff(start,"m")/2;
+				temp[i] += 1;
+			});
+
+			/*
 			for (var i = start; i < stop; i = i.add(2, 'minutes')) {
 				var results = row.dataTable.data.filter(row => {
 					return row[1] === dayjs(i).format("YYYY-MM-DD HH:mm:ss");
 				});
 				temp.push(results.length);
-			}
+			}*/
 			output.push(temp);
 		})
 
@@ -64,7 +73,6 @@ function ReceptionsOverTime({dataset, start, stop}) {
 			}
 		);
 		setChartStore(chart);
-
 	}, [dataset]);
 
     return <div className="ReceptionsOverTime"><canvas style={{width:"100%", height:"100%"}} id="number_of_receptions"></canvas></div>

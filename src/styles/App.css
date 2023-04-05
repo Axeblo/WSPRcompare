@@ -64,45 +64,6 @@
   padding: 10px !important;
 }
 
-.lds-dual-ring {
-  display: inline-block;
-  width: 80px;
-  height: 80px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -40px;
-  margin-left: -40px;
-}
-.lds-dual-ring:after {
-  content: " ";
-  display: block;
-  width: 64px;
-  height: 64px;
-  margin: 8px;
-  border-radius: 50%;
-  border: 6px solid #fff;
-  border-color: #fff transparent #fff transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
-}
-@keyframes lds-dual-ring {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading {
-  display: inline-block;
-  vertical-align: top;
-  
-  height: 100%;
-  width: 100%;
-
-  line-height: 200px;
-}
 
 .leaflet-container {
   height: 600px;
@@ -142,9 +103,29 @@
 .PanelHeader {
   height: 32px;
   line-height: 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 10px;
+  white-space:nowrap
 }
 
 .PanelContent {
   height: calc(100% - 32px);
   
+}
+
+.title {
+  position: absolute;
+  left: 0;
+  z-index: 100;
+  font-family: 'Comfortaa', cursive;
+
+  font-size: 32px;
+  background: -webkit-linear-gradient(#eee, #333);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  width: 100%;
+  text-align: left;
+  padding: 20px;
+
 }

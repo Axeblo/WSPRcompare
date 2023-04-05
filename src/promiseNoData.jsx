@@ -1,4 +1,4 @@
-
+import './styles/promiseNoData.css';
 function promiseNoData(WSPRPromiseState) {
     if(!WSPRPromiseState.promise)
       return <div className="loading">No data 😓</div>;
@@ -6,7 +6,7 @@ function promiseNoData(WSPRPromiseState) {
       if(!WSPRPromiseState.error)
         return <div className="loading"><div className="lds-dual-ring"></div></div>;
       else
-        return <h1>Error...</h1>;
+        return <h1>Promise error...</h1>;
     }
     if(!WSPRPromiseState.error)
       return "";
