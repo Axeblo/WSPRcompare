@@ -34,9 +34,9 @@
 .loading {
     display: inline-block;
     vertical-align: top;
-
-    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 0;
     width: 100%;
-
-    line-height: 200px;
+    /* background-color: red; */
 }

@@ -3,27 +3,121 @@ import "../styles/ReceptionBarGraph.css";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import dayjs from 'dayjs';
 
-function ReceptionBarGraph({dataset}) {
-	const [chart, setChart] = useState(null);
-	const [selectDataset, setSelectDataset] = useState(0);
+function ReceptionBarGraph({datasets, defaultDatasetIndex}) {
+    const [errorMessage, setErrorMessage] = useState(null);
+	const [selectDataset, setSelectDataset] = useState(defaultDatasetIndex);
+	const chartRef = useRef(null);
+	const canvasRef = useRef();
+
+	function createEmptyGraph() {
+		if (chartRef.current !== null){
+			chartRef.current.destroy();
+			chartRef.current = null;
+		}
+		
+		chartRef.current = new Chart(
+			canvasRef.current,
+			{
+				type: 'bar',
+				data: {
+				},
+				options: {
+					scales: {
+						x: {
+							grid: {
+								display: true,
+								color: '#ffffff22',
+							},
+						},
+						y: {
+							grid: {
+								display: true,
+								color: '#ffffff22',
+							},
+						}
+					},
+
+                    maintainAspectRatio: false,
+                    responsive: true,
+				},
+			}
+		);
+	}
 
     //Every time data changes, update the chart
 	useEffect(() => {
-		if( !dataset ) return;
-
-		if (chart !== null){
-			chart.destroy();
-			setChart(null);
+		setErrorMessage(null);
+		if( !Array.isArray(datasets) ){
+			setErrorMessage("Invalid datasets");
+			createEmptyGraph();
+			return;
 		}
 
-		var dataTable = dataset[selectDataset].dataTable;
+		var dataset = datasets[selectDataset]
+
+		if( dataset === undefined ){
+			setErrorMessage("Invalid dataset index")
+			createEmptyGraph();
+			return;
+		}
+
+		var status = dataset.status
+
+		if( status === undefined ){
+			setErrorMessage("Incorrect dataset format, no status.")
+			createEmptyGraph();
+			return;
+		}
+
+		if( status === "no_action") {
+			setErrorMessage("No query");
+			createEmptyGraph();
+			return;
+		}
+
+		if( status === "loading") {
+			setErrorMessage("loading...");
+			createEmptyGraph();
+			return;
+		}
+
+		if( status !== "done") {
+			setErrorMessage("Unknown error...");
+			createEmptyGraph();
+			return;
+		}
+
+		var dataTable = dataset.dataTable;
+
+		if( dataTable === undefined ) {
+			setErrorMessage("No dataTable");
+			createEmptyGraph();
+			return;
+		}
+
+		if( dataTable === null ) {
+			setErrorMessage("No dataTable(null)");
+			createEmptyGraph();
+			return;
+		}
+
+		if( !Array.isArray(dataTable.data) ) {
+			setErrorMessage("No data in tableData");
+			createEmptyGraph();
+			return;
+		}
+
+		if (chartRef.current !== null){
+			chartRef.current.destroy();
+			chartRef.current = null;
+		}
 		
-		var newChart = new Chart(
-			document.getElementById('ReceptionBarGraphHande'),
+		chartRef.current = new Chart(
+			canvasRef.current,
 			{
 				type: 'bar',
 				data: {
@@ -56,22 +150,31 @@ function ReceptionBarGraph({dataset}) {
 				},
 			}
 		);
-		setChart(newChart);
 
-	}, [selectDataset, dataset]);
+	}, [selectDataset, datasets]);
+
+	if (!Array.isArray(datasets) || 
+        datasets[selectDataset] === undefined ||
+        datasets[selectDataset].dataTable === undefined ||
+        datasets[selectDataset].dataTable === null ||
+        !Array.isArray(datasets[selectDataset].dataTable.data) ||
+		errorMessage !== null ){
+		return <div className="ReceptionBarGraph"><div className="ErrorMessage">{errorMessage}</div><canvas id="ReceptionBarGraphHande" ref={canvasRef}></canvas></div>;
+	}
 
     return (
 	<div className="ReceptionBarGraph">
-		<TextField
+		{Array.isArray(datasets)&&<TextField
 			value={selectDataset}
 			onChange={(e) => setSelectDataset(e.target.value)}
 			select
 			label="Data set"
 			size="small"
 			style={{width: "120px", position:"absolute", top: 16, right:10}} >
-			{dataset.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
-		</TextField>
-		<canvas id="ReceptionBarGraphHande"></canvas>
+			{datasets.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
+		</TextField>}
+		<canvas id="ReceptionBarGraphHande" ref={canvasRef}></canvas>
+		{errorMessage&&<span>{errorMessage}</span>}
 </div>);
 }
 

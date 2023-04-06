@@ -9,18 +9,71 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-function Mean({dataset}) {
+function Mean({datasets, defaultDatasetIndex}) {
     
-    const [selectDataset, setSelectDataset] = useState(2);
+    const [selectDataset, setSelectDataset] = useState(defaultDatasetIndex);
+    const [errorMessage, setErrorMessage] = useState(null);
     const [column, setColumn] = useState(16);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [value, setValue] = React.useState(NaN);
     const [incompatibleData, setIncompatibleData] = useState(false);
 
     useEffect(() => {
+        setErrorMessage(null);
+        if( !Array.isArray(datasets) ){
+			setErrorMessage("Invalid datasets");
+			return;
+		}
+
+		var dataset = datasets[selectDataset]
+
+		if( dataset === undefined ){
+			setErrorMessage("Invalid dataset index");
+			return;
+		}
+
+		var status = dataset.status
+
+		if( status === undefined ){
+			setErrorMessage("Incorrect dataset format, no status.");
+			return;
+		}
+
+		if( status === "no_action") {
+			setErrorMessage("No query");
+			return;
+		}
+
+		if( status === "loading") {
+			setErrorMessage("loading...");
+			return;
+		}
+
+		if( status !== "done") {
+			setErrorMessage("Unknown error...");
+			return;
+		}
+
+		var dataTable = dataset.dataTable;
+
+		if( dataTable === undefined ) {
+			setErrorMessage("No dataTable");
+			return;
+		}
+
+		if( dataTable === null ) {
+			setErrorMessage("No dataTable(null)");
+			return;
+		}
+
+		if( !Array.isArray(dataTable.data) ) {
+			setErrorMessage("No data in tableData");
+			return;
+		}
+
         //Check if every entry in collumn is a number, if its not set incompatible
         var incompatible = false;
-        dataset[selectDataset].dataTable.data.forEach(row => { if (typeof(row[column]) !== 'number') incompatible = true;});
+        dataTable.data.forEach(row => { if (typeof(row[column]) !== 'number') incompatible = true;});
 
         if(incompatible){
             setIncompatibleData(true);
@@ -29,9 +82,18 @@ function Mean({dataset}) {
         else
             setIncompatibleData(false);
 
-        var mean = dataset[selectDataset].dataTable.data.reduce((acc, row) => acc + row[column], 0) / dataset[selectDataset].dataTable.data.length;
+        var mean = dataTable.data.reduce((acc, row) => acc + row[column], 0) / dataTable.data.length;
         setValue(mean);
-    },[dataset, selectDataset, column]);
+    },[datasets, selectDataset, column]);
+
+    if( !Array.isArray(datasets) ||
+        datasets.length <= selectDataset ||
+        datasets[selectDataset].dataTable === undefined ||
+        datasets[selectDataset].dataTable === null ||
+        !Array.isArray(datasets[selectDataset].dataTable.data) )
+        return <>{errorMessage}</>;
+
+
 
     return (
     <>
@@ -57,7 +119,7 @@ function Mean({dataset}) {
                     label="Data set"
                     size="small"
                     style={{width: "120px"}} >
-                    {dataset.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
+                    {datasets.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
                 </TextField>
                 <div style={{width:10, display:"inline-block"}}/>
                 <TextField
@@ -67,7 +129,7 @@ function Mean({dataset}) {
                     label="Column"
                     size="small"
                     style={{width: "120px"}} >
-                    {dataset[selectDataset].dataTable.meta.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
+                    {datasets[selectDataset].dataTable.meta.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
                 </TextField>
             </Typography>
         </Popover>

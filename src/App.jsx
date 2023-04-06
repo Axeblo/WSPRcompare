@@ -9,10 +9,6 @@ import 'leaflet/dist/leaflet.css';
 
 import React, { useState, useEffect } from 'react';
 
-//Helper functions
-import resolvePromise from './resolvePromise';
-import promiseNoData from './promiseNoData';
-
 import compare from './compare';
 import getJSONWithParameters from './apiFunctions';
 
@@ -42,86 +38,100 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import SearchIcon from '@mui/icons-material/Search';
 
 //Misc
-import GridLayout from "react-grid-layout";
+import GridLayout, {Responsive, WidthProvider} from "react-grid-layout";
 import dayjs from 'dayjs';
+import { set } from 'ol/transform';
 
 function App() {
 	const [WSPRAPromiseState, setWSPRAPromiseState] = useState({});
-	const [WSPRAData, setWSPRAData] = useState(null);
-	const [WSPRAError, setWSPRAError] = useState(null);
-	const [TXSignA, setTXSignA] = useState("SK0WE");
+	const [TXSignA, setTXSignA] = useState("HB9T");
 
 	const [WSPRBPromiseState, setWSPRBPromiseState] = useState({});
-	const [WSPRBData, setWSPRBData] = useState(null);
-	const [WSPRBError, setWSPRBError] = useState(null);
-	const [TXSignB, setTXSignB] = useState("SK0WE/P");
+	const [TXSignB, setTXSignB] = useState("IU2PJI");
 
 	const [WSPRCPromiseState, setWSPRCPromiseState] = useState({});
-	const [WSPRCData, setWSPRCData] = useState(null);
-	const [WSPRCError, setWSPRCError] = useState(null);
 	const [TXSignC, setTXSignC] = useState("Compare");
 
-	const [dataset, setDataset] = useState(null);
+	const [datasets, setDatasets] = useState(
+		[{dataTable:null, 	name:TXSignA, 		status:"no_action"},
+		{dataTable:null, 	name:TXSignB, 		status:"no_action"},
+		{dataTable:null, 	name:"Compare", 	status:"no_action"},]);
 
 	const [band, setBand] = useState(10);
-	const [start, setStart] = useState(dayjs('2022-06-03 14:00'));
-	const [startTemp, setStartTemp] = useState(dayjs('2022-06-03 14:00'));
-	const [stop, setStop] = useState(dayjs('2022-06-03 16:00'));
-	const [stopTemp, setStopTemp] = useState(dayjs('2022-06-03 16:00'));
-	const [numberOfEntries, setNumberOfEntries] = useState(10000);
-	const [numberOfEntriesTemp, setNumberOfEntriesTemp] = useState(10000);
+	const [start, setStart] = useState(dayjs('2023-03-20 01:00'));
+	const [startTemp, setStartTemp] = useState(dayjs('2023-03-20 01:00'));
+	const [stop, setStop] = useState(dayjs('2023-04-05 16:00'));
+	const [stopTemp, setStopTemp] = useState(dayjs('2023-04-05 16:00'));
+	const [numberOfEntries, setNumberOfEntries] = useState(100000);
+	const [numberOfEntriesTemp, setNumberOfEntriesTemp] = useState(100000);
 
 	const [showBottomBar, setShowBottomBar] = useState(true);
 
 	function submitButton(e) {
-		setDataset(null);
+		setDatasets([{dataTable:null, name:TXSignA, 	status:"loading"},
+					{dataTable:null, name:TXSignB, 		status:"loading"},
+					{dataTable:null, name:TXSignC, 	status:"loading"},]);
 		setStart(startTemp);
 		setStop(stopTemp);
 		setNumberOfEntries(numberOfEntriesTemp);
-
 		//Fetching data for Transmitter A
 		var tempAPromiseState = {};
-		resolvePromise(getJSONWithParameters(TXSignA, startTemp, stopTemp, band, numberOfEntriesTemp), tempAPromiseState, () => {
-			setWSPRAData(tempAPromiseState["data"]);
-			setWSPRAError(tempAPromiseState["error"]);
-			setWSPRAPromiseState(tempAPromiseState);
+		getJSONWithParameters(TXSignA, startTemp, stopTemp, band, numberOfEntriesTemp).then((responseData)=>{
+			setDatasets(previous=>previous.map((dataset, index)=>{
+				if(index === 0)
+					return {...dataset, dataTable:responseData, status:"done"}
+				else
+					return dataset
+			}))
+			getJSONWithParameters(TXSignB, startTemp, stopTemp, band, numberOfEntriesTemp).then((responseData)=>{
+				setDatasets(previous=>previous.map((dataset, index)=>{
+					if(index === 1)
+						return {...dataset, dataTable:responseData, status:"done"}
+					else
+						return dataset
+				}))
+				}).catch((responseError)=>{
+					setDatasets(previous=>previous.map((dataset, index)=>{
+						if(index === 1)
+							return {...dataset, dataTable:null, status:"error", error:responseError}
+						else
+							return dataset
+					}))
+				});	
+		}).catch((responseError)=>{
+			setDatasets(previous=>previous.map((dataset, index)=>{
+				if(index === 0)
+					return {...dataset, dataTable:null, status:"error", error:responseError}
+				else
+					return dataset
+			}))
 		});
 		
-		//Fetching data for Transmitter B
-		var tempBPromiseState = {};
-		resolvePromise(getJSONWithParameters(TXSignB, startTemp, stopTemp, band, numberOfEntriesTemp), tempBPromiseState, () => {
-			setWSPRBData(tempBPromiseState["data"]);
-			setWSPRBError(tempBPromiseState["error"]);
-			setWSPRBPromiseState(tempBPromiseState);
-		});
-
-		//Fetching data for Transmitter C, faking it for now
-		WSPRCPromiseState.promise = 1;
-		WSPRCPromiseState.data = null;
-		WSPRCPromiseState.error = null;
-		setWSPRCData(null);
-		setWSPRCError(null);
+		// 
+		return;
 	};
 
 	//When data for Transmitter A and B is fetched, compare them
 	useEffect(() => {
 		//Safe check
-		if (!WSPRAPromiseState.data || !WSPRBPromiseState.data || !WSPRAPromiseState.data.data || !WSPRAPromiseState.data.data)
-			return;
+		if (datasets[0].status === "done" && datasets[1].status === "done" && datasets[2].status !== "done" )
+		{
+			//Compare data
+			var tempCPromiseState = {};
+			compare(datasets[0].dataTable, datasets[1].dataTable, start, stop).then(value=>{
+				setDatasets(previous=>previous.map((dataset,index)=>{
+					if(index === 2)
+						return {...dataset, dataTable:value, status: "done" };
+					else
+						return dataset;
+				}))
+			});
+		}
+	}, [datasets]);
 
-		//Compare data
-		var tempCPromiseState = {};
-		resolvePromise(compare(WSPRAPromiseState.data,WSPRBPromiseState.data, start, stop), tempCPromiseState, () => {
-			setWSPRCData(tempCPromiseState["data"]);
-			setWSPRCError(tempCPromiseState["error"]);
-			setWSPRCPromiseState(tempCPromiseState);
-			setDataset([
-						{dataTable:WSPRAPromiseState.data, name:TXSignA},
-						{dataTable:WSPRBPromiseState.data, name:TXSignB},
-						{dataTable:tempCPromiseState.data, name:"Compare"},
-					]);
-		});
-	}, [WSPRAData, WSPRBData]);
+	useEffect(()=>{
+		submitButton();
+	},[]);
 
 	//MUI theme
 	const theme = createTheme({
@@ -208,92 +218,85 @@ function App() {
 							]}
 							cols={6}
 							rowHeight={140}
-							width={1000}
+							width={"1000"}
 							onResize={()=>window.dispatchEvent(new Event('resize'))}
 						>
 							<div className="PanelContainer" key="DatapointsA">
 								<div className="PanelHeader">Data points {TXSignA}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									<EntriesCounter dataTable={WSPRAData} />
+									<EntriesCounter datasets={datasets} defaultDatasetIndex={0} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="DatapointsB">
 								<div className="PanelHeader">Data points {TXSignB}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									<EntriesCounter dataTable={WSPRBData} />
+								<EntriesCounter datasets={datasets} defaultDatasetIndex={1} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="DatapointsC">
 								<div className="PanelHeader">Data points compare</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									<EntriesCounter dataTable={WSPRCData} />
+								<EntriesCounter datasets={datasets} defaultDatasetIndex={2} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="MapA">
 								<div className="PanelHeader">{TXSignA}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									<MapOpenLayers dataset={dataset} datasetIndex={0} />
-									{/* {promiseNoData(WSPRCPromiseState)|| <MapOpenLayers dataset={dataset} datasetIndex={0} />} */}
-									{/* {promiseNoData(WSPRAPromiseState) || <WSPRMap dataset={dataset} datasetIndex={0} dataTable={WSPRAPromiseState.data} />} */}
-									{/* <WSPRMap dataset={dataset} datasetIndex={0} dataTable={WSPRAPromiseState.data} /> */}
+									<MapOpenLayers datasets={datasets} defaultDatasetIndex={0} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="MapB">
 								<div className="PanelHeader">{TXSignB}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{/* <MapOpenLayers dataset={dataset} datasetIndex={1} /> */}
-									{promiseNoData(WSPRBPromiseState) || <WSPRMap dataset={dataset} datasetIndex={1} dataTable={WSPRBPromiseState.data} />}
-									{/* <WSPRMap dataset={dataset} datasetIndex={1} dataTable={WSPRCPromiseState.data} /> */}
+									<MapOpenLayers datasets={datasets} defaultDatasetIndex={1} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="MapC">
 								<div className="PanelHeader">Compare</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{/* <MapOpenLayers dataset={dataset} datasetIndex={2} /> */}
-									{promiseNoData(WSPRCPromiseState) || <WSPRMap dataset={dataset} datasetIndex={2} 
-									{/* <WSPRMap dataset={dataset} datasetIndex={2} dataTable={WSPRCPromiseState.data} /> */}
+									<MapOpenLayers datasets={datasets} defaultDatasetIndex={2} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="GainPattern">
 								<div className="PanelHeader">Antenna gain pattern</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <AntennaGain dataTable={WSPRCPromiseState.data} />}
+									<AntennaGain datasets={datasets} defaultDatasetIndex={2} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="BarGraph">
 								<div className="PanelHeader">List of receptions</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <ReceptionBarGraph dataset={dataset} />}
+									<ReceptionBarGraph datasets={datasets} defaultDatasetIndex={0}/>
 								</div>
 							</div>
 							<div className="PanelContainer" key="Histogram">
 								<div className="PanelHeader">Histogram</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <Histogram dataset={dataset} />}
+									<Histogram datasets={datasets} defaultDatasetIndex={2}/>
 								</div>
 							</div>
 							<div className="PanelContainer" key="j">
 								<div className="PanelHeader">Number of receptions over time</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <ReceptionsOverTime dataset={dataset} start={start} stop={stop} />}
+									<ReceptionsOverTime datasets={datasets} start={start} stop={stop} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="Mean">
 								<div className="PanelHeader">Mean</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <Mean dataset={dataset}/>}
+									<Mean datasets={datasets} defaultDatasetIndex={2}/>
 								</div>
 							</div>
 							<div className="PanelContainer" key="Variance">
 								<div className="PanelHeader">Variance</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <Variance dataset={dataset}/>}
+									<Variance datasets={datasets} defaultDatasetIndex={2}/>
 								</div>
 							</div>
 							<div className="PanelContainer" key="SD">
 								<div className="PanelHeader">Standard deviation</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-									{promiseNoData(WSPRCPromiseState) || <StandardDeviation dataset={dataset}/>}
+									<StandardDeviation datasets={datasets} defaultDatasetIndex={2}/>
 								</div>
 							</div>
 						</GridLayout>
@@ -301,13 +304,7 @@ function App() {
 				</div>
 				{showBottomBar&&(
 					<BottomBar
-					datasets={
-						[
-							{dataTable:WSPRAPromiseState.data, name:TXSignA},
-							{dataTable:WSPRBPromiseState.data, name:TXSignB},
-							{dataTable:WSPRCPromiseState.data, name:"Compare"},
-						]
-					}
+					datasets={datasets}
 					close={()=>setShowBottomBar(false)} />)}
 				{!showBottomBar&&<Button style={{position:"absolute",bottom:0,right:20}} onClick={()=>setShowBottomBar(true)}>Show data panel</Button>}
 			</ThemeProvider>
