@@ -55,8 +55,8 @@ function App() {
 	const TXSignBRef            = useRef("");
 	const TXSignCRef            = useRef("Compare");
 	const bandRef               = useRef(7);
-	const startRef              = useRef();
-	const stopRef               = useRef();
+	const startRef              = useRef(dayjs());
+	const stopRef               = useRef(dayjs());
 	const stopIsNowRef          = useRef(false);
 	const numberOfEntriesRef    = useRef(200000);
 	   
@@ -80,9 +80,10 @@ function App() {
 		clearInterval(autoUpdateIntervalRef.current);
 		if( autoUpdate > -1 ) autoUpdateIntervalRef.current = setInterval(submitButton, autoUpdate * 60 * 1000);
 
-		startRef.current   = dayjs(startInputRef.current.value.trim().replace(/[^\x00-\x7F]/g, ""));
-		if( stopTimeNowChecked )
+		startRef.current    = dayjs(startInputRef.current.value.trim().replace(/[^\x00-\x7F]/g, ""));
+		if( stopTimeNowChecked ) {
 			stopRef.current = dayjs()
+		}
 		else
 			stopRef.current = dayjs(stopInputRef.current.value.trim().replace(/[^\x00-\x7F]/g, ""));
 		bandRef.current    = bandInputRef.current.value;

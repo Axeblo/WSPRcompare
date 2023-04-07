@@ -2,6 +2,8 @@ import '../styles/SpotsOverTime.css';
 
 import React, { useEffect, useState, useRef } from 'react';
 import dayjs from 'dayjs';
+import dayjsPluginUTC from 'dayjs-plugin-utc'
+dayjs.extend(dayjsPluginUTC)
 
 import Chart from 'chart.js/auto';
 
@@ -16,9 +18,6 @@ function SpotsOverTime({datasets, start, stop}) {
 
 	function createEmptyChart() {
 		var labels = [];
-
-        for (var i = start; i <= stop; i = i.add(2, 'minutes'))
-			labels.push(dayjs(i).format("DD/MM HH:mm"));
 
 		if (chartRef.current) {
 			chartRef.current.data = {labels: labels};
@@ -35,16 +34,16 @@ function SpotsOverTime({datasets, start, stop}) {
 					options: {
 						scales: {
 							x: {
-							grid: {
-								display: true,
-								color: '#ffffff22',
-							},
+								grid: {
+									display: true,
+									color: '#ffffff22',
+								},
 							},
 							y: {
-							grid: {
-								display: true,
-								color: '#ffffff22',
-							},
+								grid: {
+									display: true,
+									color: '#ffffff22',
+								},
 							},
 						},
 						maintainAspectRatio: false,
@@ -57,6 +56,7 @@ function SpotsOverTime({datasets, start, stop}) {
 
     //Every time data changes, update the chart
 	useEffect(() => {
+
 		setErrorMessage(null);
         if( !Array.isArray(datasets) ){
 			setErrorMessage("Invalid datasets");
@@ -127,8 +127,8 @@ function SpotsOverTime({datasets, start, stop}) {
 
         var labels = [];
 
-        for (var i = start; i <= stop; i = i.add(2*mean, 'minutes'))
-			labels.push(dayjs(i).format("DD/MM HH:mm"));
+        for (var i = start; !stop.isBefore(i); i = i.add(2*mean, 'minutes'))
+			labels.push(i.local().format("DD/MM HH:mm"));
 
 		var output = [];
 
@@ -136,7 +136,7 @@ function SpotsOverTime({datasets, start, stop}) {
 			var temp = new Array(labels.length).fill(0);
 			if( row.dataTable ) {
 				row.dataTable.data.forEach((row, index) => {
-					var date = dayjs(row[1]);
+					var date = dayjs.utc(row[1]);
 					var i = parseInt(date.diff(start,"m")/2/mean);
 					temp[i] += 1;
 				})

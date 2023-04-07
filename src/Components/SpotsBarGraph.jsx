@@ -6,6 +6,8 @@ import MenuItem from "@mui/material/MenuItem";
 import React, { useEffect, useState, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import dayjs from 'dayjs';
+import dayjsPluginUTC from 'dayjs-plugin-utc'
+dayjs.extend(dayjsPluginUTC)
 
 function SpotsBarGraph({datasets, defaultDatasetIndex}) {
     const [errorMessage, setErrorMessage] = useState(null);
@@ -122,7 +124,7 @@ function SpotsBarGraph({datasets, defaultDatasetIndex}) {
 			//chartRef.current.destroy();
 			//chartRef.current = null;
 
-			chartRef.current.data.labels = dataTable.data.map(row => dayjs(row[1]).format("DD/MM HH:mm"))
+			chartRef.current.data.labels = dataTable.data.map(row => dayjs.utc(row[1]).local().format("DD/MM HH:mm"))
 			chartRef.current.data.datasets = [
 				{
 					label: 'SNR difference',
@@ -137,7 +139,7 @@ function SpotsBarGraph({datasets, defaultDatasetIndex}) {
 				{
 					type: 'bar',
 					data: {
-						labels: dataTable.data.map(row => dayjs(row[1]).format("DD/MM HH:mm")),
+						labels: dataTable.data.map(row => dayjs.utc(row[1]).local().format("DD/MM HH:mm")),
 						datasets: [
 							{
 								label: 'SNR difference',

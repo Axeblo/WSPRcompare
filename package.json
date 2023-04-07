@@ -21,6 +21,7 @@
     "chart.js": "^4.2.1",
     "d3": "^7.8.4",
     "dayjs": "^1.11.7",
+    "dayjs-plugin-utc": "^0.1.2",
     "firebase": "^9.18.0",
     "firebase-cli": "^1.2.0",
     "firebase-tools": "^11.25.2",
