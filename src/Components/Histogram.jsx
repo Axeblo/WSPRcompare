@@ -373,7 +373,7 @@ function Histogram({ datasets, defaultDatasetIndex }) {
             {Array.isArray(datasets)&&(
             <>
             {mean!==null&&variance!==null&&standardDeviation!==null&&
-                <div style={{display:"inline-block", position:"absolute", top: "80px", right: "30px", textAlign:"left"}}>
+                <div style={{display:"inline-block", position:"absolute", top: "50px", right: "30px", textAlign:"left"}}>
                     <span style={{marginRight:"10px"}}>μ: {mean.toFixed(1)}</span>
                     <span style={{marginRight:"10px"}}>σ²: {variance.toFixed(1)}</span>
                     <span style={{marginRight:"10px"}}>σ: {standardDeviation.toFixed(1)}</span><br/>
