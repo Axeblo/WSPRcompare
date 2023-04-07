@@ -89,7 +89,7 @@ async function compare(A, B) {
             var BTime = dayjs(B.data[BCounter][TIME]);
 
             var loopCounter = 0;
-            //Find first timeslot where both transmitters have receptions
+            //Find first timeslot where both transmitters have spots
             while (!ATime.isSame(BTime) &&
                 ACounter < A.data.length - 1 &&
                 BCounter < B.data.length - 1) {
@@ -114,7 +114,7 @@ async function compare(A, B) {
             }
             ++CommonTimeslotCounter
             //We have now found a common timeslot
-            //After that, find out how many receptions each transmitter has in that timeslot    
+            //After that, find out how many spots each transmitter has in that timeslot    
 
             var ACounterEnd = ACounter;
             var BCounterEnd = BCounter;
@@ -135,13 +135,13 @@ async function compare(A, B) {
                 BTimeEnd = dayjs(B.data[BCounterEnd][TIME]);
             } 
 
-            //We now have the number of receptions for each transmitter in that timeslot
+            //We now have the number of spots for each transmitter in that timeslot
             //Extract subarray with data that is only in this timeslot for easier processing.
 
             var ATimeslotData = A.data.slice(ACounter, ACounterEnd);
             var BTimeslotData = B.data.slice(BCounter, BCounterEnd);
 
-            //Both transmitter A and B has receptions in timeslot k.
+            //Both transmitter A and B has spots in timeslot k.
             //Find out if the same receiver has received both transmissions, if so, add to data
             for (var j = 0; j < ATimeslotData.length; ++j) {
                 const found = BTimeslotData.find(recB => ATimeslotData[j][RX_SIGN] === recB[RX_SIGN]);

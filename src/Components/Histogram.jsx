@@ -256,7 +256,7 @@ function Histogram({ datasets, defaultDatasetIndex }) {
                 labels: histogramLabels,
                 datasets: [
                     {
-                        label: '# of receptions',
+                        label: '# of spots',
                         data: buckets,
                     }
                 ]
@@ -272,7 +272,7 @@ function Histogram({ datasets, defaultDatasetIndex }) {
                         labels: histogramLabels,
                         datasets: [
                             {
-                                label: '# of receptions',
+                                label: '# of spots',
                                 data: buckets,
                             }
                         ]

@@ -1,4 +1,4 @@
-import "../styles/ReceptionBarGraph.css";
+import "../styles/SpotsBarGraph.css";
 
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
@@ -7,7 +7,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import dayjs from 'dayjs';
 
-function ReceptionBarGraph({datasets, defaultDatasetIndex}) {
+function SpotsBarGraph({datasets, defaultDatasetIndex}) {
     const [errorMessage, setErrorMessage] = useState(null);
 	const [selectDataset, setSelectDataset] = useState(defaultDatasetIndex);
 	const chartRef = useRef(null);
@@ -113,7 +113,7 @@ function ReceptionBarGraph({datasets, defaultDatasetIndex}) {
 			return;
 		}
 
-		if( dataTable.data.length > 10000 ) {
+		if( dataTable.data.length > 5000 ) {
 			setErrorMessage("Number of entries is too high😑");
 			createEmptyGraph();
 			return;
@@ -171,7 +171,7 @@ function ReceptionBarGraph({datasets, defaultDatasetIndex}) {
 	}, [selectDataset, datasets]);
 
     return (
-	<div className="ReceptionBarGraph">
+	<div className="SpotsBarGraph">
 		{Array.isArray(datasets)&&<TextField
 			value={selectDataset}
 			onChange={(e) => setSelectDataset(e.target.value)}
@@ -181,9 +181,9 @@ function ReceptionBarGraph({datasets, defaultDatasetIndex}) {
 			style={{width: "120px", position:"absolute", top: 16, right:10}} >
 			{datasets.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
 		</TextField>}
-		<canvas id="ReceptionBarGraphHande" ref={canvasRef}></canvas>
+		<canvas id="SpotsBarGraphHande" ref={canvasRef}></canvas>
 		{errorMessage&&<div className="ErrorMessage">{errorMessage}</div>}
 </div>);
 }
 
-export default ReceptionBarGraph;
+export default SpotsBarGraph;

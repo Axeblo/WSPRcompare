@@ -22,8 +22,8 @@ import Histogram                               from './Components/Histogram';
 import NewHistogram                            from './Components/NewHistogram';
 import AntennaGain                             from './Components/AntennaGain';
 import NewAntennaGain                          from './Components/NewAntennaGain';
-import ReceptionBarGraph                       from './Components/ReceptionBarGraph';
-import ReceptionsOverTime                      from './Components/ReceptionsOverTime';
+import SpotsBarGraph                           from './Components/SpotsBarGraph';
+import SpotsOverTime                           from './Components/SpotsOverTime';
 import Mean                                    from './Components/Mean';
 import EntriesCounter                          from './Components/EntriesCounter';
 import Variance                                from './Components/Variance';
@@ -272,7 +272,7 @@ function App() {
 										{ i: "GainPattern",        x: 0, y: 6, w: 1, h: 3, static: false },
 										{ i: "BarGraph",           x: 0, y: 14,w: 2, h: 2, static: false },
 										{ i: "Histogram",          x: 0, y: 9, w: 2, h: 2, static: false },
-										{ i: "ReceptionsOverTime", x: 0, y: 12,w: 2, h: 2, static: false },
+										{ i: "SpotsOverTime",      x: 0, y: 12,w: 2, h: 2, static: false },
 										{ i: "Mean",               x: 1, y: 6, w: 1, h: 1, static: false },
 										{ i: "Variance",           x: 1, y: 7, w: 1, h: 1, static: false },
 										{ i: "SD",                 x: 1, y: 8, w: 1, h: 1, static: false },
@@ -287,7 +287,7 @@ function App() {
 										{ i: "GainPattern",        x: 2, y: 3, w: 2, h: 3, static: false },
 										{ i: "BarGraph",           x: 0, y: 10,w: 3, h: 2, static: false },
 										{ i: "Histogram",          x: 0, y: 6, w: 3, h: 2, static: false },
-										{ i: "ReceptionsOverTime", x: 0, y: 8, w: 3, h: 2, static: false },
+										{ i: "SpotsOverTime",      x: 0, y: 8, w: 3, h: 2, static: false },
 										{ i: "Mean",               x: 3, y: 5, w: 1, h: 1, static: false },
 										{ i: "Variance",           x: 3, y: 6, w: 1, h: 1, static: false },
 										{ i: "SD",                 x: 3, y: 7, w: 1, h: 1, static: false },
@@ -302,7 +302,7 @@ function App() {
 										{ i: "GainPattern",        x: 4, y: 3, w: 2, h: 3, static: false },
 										{ i: "BarGraph",           x: 0, y: 8, w: 3, h: 2, static: false },
 										{ i: "Histogram",          x: 0, y: 3, w: 4, h: 3, static: false },
-										{ i: "ReceptionsOverTime", x: 3, y: 6, w: 3, h: 3, static: false },
+										{ i: "SpotsOverTime",      x: 3, y: 6, w: 3, h: 3, static: false },
 										{ i: "Mean",               x: 0, y: 6, w: 1, h: 1, static: false },
 										{ i: "Variance",           x: 1, y: 6, w: 1, h: 1, static: false },
 										{ i: "SD",                 x: 2, y: 6, w: 1, h: 1, static: false },
@@ -317,7 +317,7 @@ function App() {
 										{ i: "GainPattern",        x: 6, y: 0, w: 2, h: 3, static: false },
 										{ i: "BarGraph",           x: 0, y: 5, w: 3, h: 2, static: false },
 										{ i: "Histogram",          x: 3, y: 3, w: 4, h: 3, static: false },
-										{ i: "ReceptionsOverTime", x: 0, y: 3, w: 3, h: 2, static: false },
+										{ i: "SpotsOverTime",      x: 0, y: 3, w: 3, h: 2, static: false },
 										{ i: "Mean",               x: 7, y: 3, w: 1, h: 1, static: false },
 										{ i: "Variance",           x: 7, y: 4, w: 1, h: 1, static: false },
 										{ i: "SD",                 x: 7, y: 5, w: 1, h: 1, static: false },
@@ -335,19 +335,19 @@ function App() {
 							onResize={()=>window.dispatchEvent(new Event('resize'))}
 						>
 							<div className="PanelContainer" key="DatapointsA">
-								<div className="PanelHeader">Data points {TXSignARef.current}</div>
+								<div className="PanelHeader">Spots {TXSignARef.current}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()}>
 									<EntriesCounter datasets={datasets} defaultDatasetIndex={0} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="DatapointsB">
-								<div className="PanelHeader">Data points {TXSignBRef.current}</div>
+								<div className="PanelHeader">Spots {TXSignBRef.current}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()}>
 								<EntriesCounter datasets={datasets} defaultDatasetIndex={1} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="DatapointsC">
-								<div className="PanelHeader">Data points {TXSignCRef.current}</div>
+								<div className="PanelHeader">Spots {TXSignCRef.current}</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()}>
 								<EntriesCounter datasets={datasets} defaultDatasetIndex={2} />
 								</div>
@@ -377,9 +377,9 @@ function App() {
 								</div>
 							</div>
 							<div className="PanelContainer" key="BarGraph">
-								<div className="PanelHeader">List of receptions</div>
+								<div className="PanelHeader">List of spots</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()}>
-									<ReceptionBarGraph datasets={datasets} defaultDatasetIndex={2}/>
+									<SpotsBarGraph datasets={datasets} defaultDatasetIndex={2}/>
 								</div>
 							</div>
 							<div className="PanelContainer" key="Histogram">
@@ -388,10 +388,10 @@ function App() {
 									<Histogram datasets={datasets} defaultDatasetIndex={2}/>
 								</div>
 							</div>
-							<div className="PanelContainer" key="ReceptionsOverTime">
-								<div className="PanelHeader">Number of receptions over time</div>
+							<div className="PanelContainer" key="SpotsOverTime">
+								<div className="PanelHeader">Number of spots over time</div>
 								<div className="PanelContent" onMouseDown={e => e.stopPropagation()}>
-									<ReceptionsOverTime datasets={datasets} start={startRef.current} stop={stopRef.current} />
+									<SpotsOverTime datasets={datasets} start={startRef.current} stop={stopRef.current} />
 								</div>
 							</div>
 							<div className="PanelContainer" key="Mean">

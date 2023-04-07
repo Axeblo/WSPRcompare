@@ -1,11 +1,11 @@
-import '../styles/ReceptionsOverTime.css';
+import '../styles/SpotsOverTime.css';
 
 import React, { useEffect, useState, useRef } from 'react';
 import dayjs from 'dayjs';
 
 import Chart from 'chart.js/auto';
 
-function ReceptionsOverTime({datasets, start, stop}) {
+function SpotsOverTime({datasets, start, stop}) {
 	const [chartStore, setChartStore] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
@@ -117,22 +117,30 @@ function ReceptionsOverTime({datasets, start, stop}) {
             createEmptyChart();
 			return;
 		}
+		
+		var mean = 1;
+		if( stop.diff(start, "m")/2 > 2000)
+			mean = 10;
+
+		if( stop.diff(start, "m")/2 > 7000)
+			mean = 100;
 
         var labels = [];
 
-        for (var i = start; i <= stop; i = i.add(2, 'minutes'))
+        for (var i = start; i <= stop; i = i.add(2*mean, 'minutes'))
 			labels.push(dayjs(i).format("DD/MM HH:mm"));
 
 		var output = [];
 
 		datasets.forEach((row, index) => {
 			var temp = new Array(labels.length).fill(0);
-			if( row.dataTable )
+			if( row.dataTable ) {
 				row.dataTable.data.forEach((row, index) => {
 					var date = dayjs(row[1]);
-					var i = date.diff(start,"m")/2;
+					var i = parseInt(date.diff(start,"m")/2/mean);
 					temp[i] += 1;
-			});
+				})
+			}
 			output.push(temp);
 		})
 
@@ -183,7 +191,7 @@ function ReceptionsOverTime({datasets, start, stop}) {
 		}
 	}, [datasets]);
 
-    return <div className="ReceptionsOverTime"><div className="ErrorMessage">{errorMessage}</div><canvas style={{width:"100%", height:"100%"}} id="number_of_receptions" ref={canvasRef}></canvas></div>
+    return <div className="SpotsOverTime"><div className="ErrorMessage">{errorMessage}</div><canvas style={{width:"100%", height:"100%"}} id="number_of_spots" ref={canvasRef}></canvas></div>
 }
 
-export default ReceptionsOverTime;
+export default SpotsOverTime;
