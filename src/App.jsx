@@ -170,13 +170,13 @@ function App() {
 				<div className={"MainPanel "+((!showBottomBar)&&"fullHeight")}>
 					{/* <div className="title">WSPR Compare</div> */}
 					<div className="App ">
-						<div className="Wrapper" style={{textAlign:"right", padding:"10px 10px 10px 10px" }}>
+						<div className="Wrapper">
 							<DateTimePicker
 								inputRef={startInputRef}
 								defaultValue={dayjs('2023-04-03 15:00')}
 								label="Start"
 								className="DateTimePicker"
-								format="YYYY-MM-DD HH:mm" />
+								format="YYYY-MM-DD HH:mm"/>
 							<div style={{display:"inline-block", width: 10}}></div>
 							<DateTimePicker
 								inputRef={stopInputRef}
@@ -195,6 +195,7 @@ function App() {
 										}}
 										inputRef={stopTimeNowInputRef} />
 									}
+									className="Checkbox"
 									label="Now" />
 								<TextField
 									value={autoUpdate}
@@ -209,7 +210,7 @@ function App() {
 									defaultValue={-1}
 									label="Auto update"
 									select
-									style={{ width: 100 }}
+									className="AutoUpdate"
 									size="small"
 								>
 									<MenuItem key={1} value="-1">None</MenuItem>
@@ -222,13 +223,13 @@ function App() {
 									<MenuItem key={8} value="120">2 hour</MenuItem>
 								</TextField>
 						</div>
-						<div style={{textAlign:"left", paddingLeft:"10px"}}>
+						<div className="Wrapper" style={{textAlign:"left"}}>
 								<TextField
 								inputRef={TXSignAInputRef}
 								defaultValue={"HB9T"}
 								label="tx_sign A"
 								id="outlined-basic"
-								style={{ width: 160 }}
+								className="TXInput"
 								variant="outlined"
 								size="small" />
 							<div style={{display:"inline-block", width: 10}}></div>
@@ -237,7 +238,7 @@ function App() {
 								defaultValue={"IU2PJI"}
 								label="tx_sign B"
 								id="outlined-basic"
-								style={{ width: 160 }}
+								className="TXInput"
 								variant="outlined"
 								size="small" />
 								<div style={{display:"inline-block", width: 10}}></div>
@@ -246,7 +247,7 @@ function App() {
 								defaultValue={7}
 								label="Band"
 								select
-								style={{ width: 120 }}
+								className="Band"
 								size="small"
 							>
 								<MenuItem key={1} value="7">7 MHz</MenuItem>
@@ -264,19 +265,19 @@ function App() {
 							layouts={
 								{
 									sm:[
-										{ i: "DatapointsA",        x: 0, y: 0, w: 1, h: 1, static: false },
-										{ i: "DatapointsB",        x: 1, y: 0, w: 1, h: 1, static: false },
-										{ i: "DatapointsC",        x: 0, y: 1, w: 2, h: 1, static: false },
-										{ i: "MapA",               x: 0, y: 3, w: 1, h: 2, static: false },
-										{ i: "MapB",               x: 1, y: 3, w: 1, h: 2, static: false },
-										{ i: "MapC",               x: 0, y: 5, w: 2, h: 2, static: false },
-										{ i: "GainPattern",        x: 0, y: 6, w: 1, h: 3, static: false },
-										{ i: "BarGraph",           x: 0, y: 14,w: 2, h: 2, static: false },
-										{ i: "Histogram",          x: 0, y: 9, w: 2, h: 2, static: false },
-										{ i: "SpotsOverTime",      x: 0, y: 12,w: 2, h: 2, static: false },
-										{ i: "Mean",               x: 1, y: 6, w: 1, h: 1, static: false },
-										{ i: "Variance",           x: 1, y: 7, w: 1, h: 1, static: false },
-										{ i: "SD",                 x: 1, y: 8, w: 1, h: 1, static: false },
+										{ i: "DatapointsA",        x: 0, y: 0,  w: 1, h: 1, static: false },
+										{ i: "DatapointsB",        x: 1, y: 1,  w: 1, h: 1, static: false },
+										{ i: "DatapointsC",        x: 0, y: 1,  w: 2, h: 1, static: false },
+										{ i: "MapA",               x: 0, y: 4,  w: 2, h: 2, static: false },
+										{ i: "MapB",               x: 0, y: 6,  w: 2, h: 2, static: false },
+										{ i: "MapC",               x: 0, y: 7,  w: 2, h: 2, static: false },
+										{ i: "GainPattern",        x: 0, y: 9, w: 2, h: 3, static: false },
+										{ i: "Histogram",          x: 0, y: 12, w: 2, h: 2, static: false },
+										{ i: "Mean",               x: 0, y: 14, w: 1, h: 1, static: false },
+										{ i: "Variance",           x: 1, y: 14, w: 1, h: 1, static: false },
+										{ i: "SD",                 x: 0, y: 15, w: 2, h: 1, static: false },
+										{ i: "SpotsOverTime",      x: 0, y: 17, w: 2, h: 2, static: false },
+										{ i: "BarGraph",           x: 0, y: 19, w: 2, h: 2, static: false },
 									],
 									md:[
 										{ i: "DatapointsA",        x: 2, y: 0, w: 2, h: 1, static: false },

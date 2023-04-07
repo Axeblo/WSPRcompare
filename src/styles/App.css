@@ -1,208 +1,262 @@
 #root {
-  height: 100vh;
-  margin: 0 auto;
-  padding: 0;
-  text-align: center;
-  overflow: hidden;
+	height: 100vh;
+	margin: 0 auto;
+	padding: 0;
+	text-align: center;
+	overflow: hidden;
 }
 
 .MainPanel {
-  height: calc(100vh - 500px);
-  width: 100%;
-  overflow: auto;
-  overflow-x:hidden;
-  margin: 0;
+	height: calc(100vh - 500px);
+	width: 100%;
+	overflow: auto;
+	overflow-x: hidden;
+	margin: 0;
 }
 
 .BottomBar {
-  position:relative;
-  box-sizing: border-box;
-  height: 500px;
-  width: 100%;
-  box-shadow: 0 0 40px #00000066;
-  /* resize:vertical;
+	position: relative;
+	box-sizing: border-box;
+	height: 500px;
+	width: 100%;
+	box-shadow: 0 0 40px #00000066;
+	/* resize:vertical;
   overflow:auto; */
-  /* border-top: 1px solid rgb(171, 171, 171); */
+	/* border-top: 1px solid rgb(171, 171, 171); */
 }
 
 .fullHeight {
-  height: 100vh;
+	height: 100vh;
 }
 
 .layout {
-  /* max-width: 1000px; */
-  margin: 0 auto;
+	/* max-width: 1000px; */
+	margin: 0 auto;
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+	height: 6em;
+	padding: 1.5em;
+	will-change: filter;
+	transition: filter 300ms;
 }
 
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+	filter: drop-shadow(0 0 2em #646cffaa);
 }
 
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+	filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+	a:nth-of-type(2) .logo {
+		animation: logo-spin infinite 20s linear;
+	}
 }
 
 .card {
-  padding: 2em;
+	padding: 2em;
 }
 
 .read-the-docs {
-  color: #888;
+	color: #888;
 }
+
 .DateTimePicker .MuiInputBase-input {
-  width: 140px;
-  padding: 10px !important;
+	width: 140px;
+	padding: 10px !important;
 }
 
 
 .leaflet-container {
-  height: 600px;
-    width: 500px;
+	height: 600px;
+	width: 500px;
 }
 
 .leaflet-div-icon {
-  background: transparent;
-  border: none;
+	background: transparent;
+	border: none;
 }
 
 .leaflet-control-attribution {
-  display: none;
+	display: none;
 }
 
 /* Customise Zoom Controls */
 
 .leaflet-control-zoom a {
-  color: white !important;
-  background: rgba(0, 0, 0, 0.5) !important;
-  transition: all 0.5s ease;
+	color: white !important;
+	background: rgba(0, 0, 0, 0.5) !important;
+	transition: all 0.5s ease;
 }
 
 .leaflet-control-zoom a:hover {
-  color: white !important;
-  background: rgba(0, 0, 0, 0.9) !important;
+	color: white !important;
+	background: rgba(0, 0, 0, 0.9) !important;
 }
 
 .PanelContainer {
-  background-color: #181b1f;
-  border: 1px solid #ccccdc12;
-  border-radius: 3px;
-  height: 100%;
-  overflow: hidden;
+	background-color: #181b1f;
+	border: 1px solid #ccccdc12;
+	border-radius: 3px;
+	height: 100%;
+	overflow: hidden;
 }
 
 .PanelHeader {
-  height: 32px;
-  line-height: 32px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 10px;
-  white-space:nowrap
+	height: 32px;
+	line-height: 32px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 0 10px;
+	white-space: nowrap
 }
 
 .PanelContent {
-  height: calc(100% - 32px);
-  
+	height: calc(100% - 32px);
+
 }
 
 .title {
-  position: absolute;
-  left: 0;
-  z-index: 100;
-  font-family: 'Comfortaa', cursive;
+	position: absolute;
+	left: 0;
+	z-index: 100;
+	font-family: 'Comfortaa', cursive;
 
-  font-size: 32px;
-  background: -webkit-linear-gradient(#eee, #333);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  width: 100%;
-  text-align: left;
-  padding: 20px;
+	font-size: 32px;
+	background: -webkit-linear-gradient(#eee, #333);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	width: 100%;
+	text-align: left;
+	padding: 20px;
 
 }
 
 .lds-dual-ring {
-  display: inline-block;
-  width: 80px;
-  height: 80px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -42px;
-  margin-left: -42px;
+	display: inline-block;
+	width: 80px;
+	height: 80px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -42px;
+	margin-left: -42px;
 }
 
 .lds-dual-ring:after {
-  content: " ";
-  display: block;
-  width: 64px;
-  height: 64px;
-  margin: 8px;
-  border-radius: 50%;
-  border: 6px solid #fff;
-  border-color: #fff transparent #fff transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
+	content: " ";
+	display: block;
+	width: 64px;
+	height: 64px;
+	margin: 8px;
+	border-radius: 50%;
+	border: 6px solid #fff;
+	border-color: #fff transparent #fff transparent;
+	animation: lds-dual-ring 1.2s linear infinite;
 }
 
 @keyframes lds-dual-ring {
-  0% {
-      transform: rotate(0deg);
-  }
+	0% {
+		transform: rotate(0deg);
+	}
 
-  100% {
-      transform: rotate(360deg);
-  }
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 .loading {
-  display: inline-block;
-  vertical-align: top;
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  /* background-color: red; */
+	display: inline-block;
+	vertical-align: top;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 100%;
+	/* background-color: red; */
 }
 
 .ShowDataPanelButton {
-  position: absolute !important;
-  bottom: 0;
-  right: 20px
+	position: absolute !important;
+	bottom: 0;
+	right: 20px
 }
 
 
 button.BottomBarClose {
-  position: absolute !important;
-  top: 10px;
-  right: 10px;
-  height: 30px;
+	position: absolute !important;
+	top: 10px;
+	right: 10px;
+	height: 30px;
 }
 
 .ol-control button {
-  background-color: #181b1f !important;
+	background-color: #181b1f !important;
 }
 
 .ol-control {
-  background-color: transparent !important;
+	background-color: transparent !important;
+}
+
+.Wrapper {
+	text-align: right;
+	padding: 10px 10px 0 10px;
+}
+.TXInput {
+	width: 140px;
+}
+
+.AutoUpdate {
+	width: 100px;
+}
+
+.Band {
+	width: 120px;
+}
+
+
+
+@media screen and (max-width: 700px) {
+	.Checkbox {
+		position: relative !important;
+		top: -10px !important;
+	}
+	.Wrapper {
+		text-align: left;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.DateTimePicker .MuiInputBase-input {
+		width: 100%;
+	}
+
+	.DateTimePicker {
+		margin-bottom: 10px !important;
+	}
+	.TXInput {
+		width: 100%;
+		margin-bottom: 10px !important;
+
+	}
+	.AutoUpdate {
+		width: 100%;
+		margin-bottom: 0 !important;
+
+	}
+	.Band {
+		width: 100%;
+		margin-bottom: 10px !important;
+	}
 }
