@@ -304,7 +304,7 @@ function App() {
 										{ i: "GainPattern",        x: 4, y: 3, w: 2, h: 3, static: false },
 										{ i: "BarGraph",           x: 0, y: 8, w: 3, h: 2, static: false },
 										{ i: "Histogram",          x: 0, y: 3, w: 4, h: 3, static: false },
-										{ i: "SpotsOverTime",      x: 3, y: 6, w: 3, h: 3, static: false },
+										{ i: "SpotsOverTime",      x: 3, y: 6, w: 3, h: 2, static: false },
 										{ i: "Mean",               x: 0, y: 6, w: 1, h: 1, static: false },
 										{ i: "Variance",           x: 1, y: 6, w: 1, h: 1, static: false },
 										{ i: "SD",                 x: 2, y: 6, w: 1, h: 1, static: false },
