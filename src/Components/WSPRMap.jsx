@@ -21,7 +21,6 @@ function WSPRMap({ dataset, datasetIndex, dataTable }) {
 	
 	if( selectedDataTable && selectedDataTable.data && selectedDataTable.data[0] )
 		center = [selectedDataTable.data[0][8], selectedDataTable.data[0][9]];
-	// console.log(`WSPRMap render, datasetIndex ${datasetIndex} selectedDataTable ${selectedDataTable.data[0]}`);
 	return (
 		<MapContainer
 			className="WSPRMapContainer"

@@ -1,71 +1,118 @@
 
 import dayjs from 'dayjs';
 
-async function compare(A, B, start, stop) {
+async function compare(A, B) {
     const result = await new Promise((resolve, reject) => {
+        var stopwatch = performance.now();
+        console.log("⏱ Compare started");
+        const ID = 0
+        const TIME = 1
+        const BAND = 2
+        const RX_SIGN = 3
+        const RX_LAT = 4
+        const RX_LON = 5
+        const RX_LOC = 6
+        const TX_SIGN = 7
+        const TX_LAT = 8
+        const TX_LON = 9
+        const TX_LOC = 10
+        const DISTANCE = 11
+        const AZIMUTH = 12
+        const RX_AZIMUTH = 13 
+        const FREQUENCY = 14
+        const POWER = 15
+        const SNR = 16
+        const DRIFT = 17
+        const VERSION = 18
+        const CODE = 19
+        const SNRA = 20
+        const SNRB = 21
+        const DRIFTA = 22
+        const DRIFTB = 23
+
         var outputDataTable = {
             meta: [
-                { "name": "id" },
-                { "name": "time" },
-                { "name": "band" },
-                { "name": "rx_sign" },
-                { "name": "rx_lat" },
-                { "name": "rx_lon" },
-                { "name": "rx_loc" },
-                { "name": "tx_sign" },
-                { "name": "tx_lat" },
-                { "name": "tx_lon" },
-                { "name": "tx_loc" },
-                { "name": "distance" },
-                { "name": "azimuth" },
-                { "name": "rx_azimuth" },
-                { "name": "frequency" },
-                { "name": "power" },
-                { "name": "∆snr" },
-                { "name": "snrA" },
-                { "name": "snrB" },
-                { "name": "driftA" },
-                { "name": "driftB" }
+                { "name": "id",         "type": "UInt64"                  },
+                { "name": "time",       "type": "DatTime"                },
+                { "name": "band",       "type": "Int16"                  },
+                { "name": "rx_sign",    "type": "LowCardinality(String)" },
+                { "name": "rx_lat",     "type": "Float32"                },
+                { "name": "rx_lon",     "type": "Float32"                },
+                { "name": "rx_loc",     "type": "LowCardinality(String)" },
+                { "name": "tx_sign",    "type": "LowCardinality(String)" },
+                { "name": "tx_lat",     "type": "Float32"                },
+                { "name": "tx_lon",     "type": "Float32"                },
+                { "name": "tx_loc",     "type": "LowCardinality(String)" },
+                { "name": "distance",   "type": "UInt16"                 },
+                { "name": "azimuth",    "type": "UInt16"                 },
+                { "name": "rx_azimuth", "type": "UInt16"                 },
+                { "name": "frequency",  "type": "UInt32"                 },
+                { "name": "∆power",     "type": "Int8"                   },
+                { "name": "∆snr",       "type": "Int8"                   },
+                { "name": "∆drift",     "type": "Int8"                   },
+                { "name": "version",    "type": "LowCardinality(String)" },
+                { "name": "code",       "type": "Int8"                   },
+                { "name": "power_a",    "type": "Int8"                   },
+                { "name": "power_b",    "type": "Int8"                   },
+                { "name": "snr_a",      "type": "Int8"                   },
+                { "name": "snr_b",      "type": "Int8"                   },
+                { "name": "drift_a",    "type": "Int8"                   },
+                { "name": "drift_b",    "type": "Int8"                   }
             ], data: []
         };
 
+        if (A === undefined)
+            reject("A undefined");
+
+        if (B === undefined)
+            reject("B undefined");
+
+        if (A.data === undefined)
+            reject("A.data undefined");
+
+        if (B.data === undefined)
+            reject("B.data undefined");
+            
+        if (!Array.isArray(A.data))
+            reject("A.data is not an array");
+            
+        if (!Array.isArray(B.data))
+            reject("B.data is not an array");
+
         var ACounter = 0;
         var BCounter = 0;
-        while( ACounter < A.data.length && BCounter < B.data.length ) {
-            var ATime = dayjs(A.data[ACounter][1]);
-            var BTime = dayjs(B.data[BCounter][1]);
+
+        var CommonTimeslotCounter = 0;
+
+        while (ACounter < A.data.length && BCounter < B.data.length) {
+            var ATime = dayjs(A.data[ACounter][TIME]);
+            var BTime = dayjs(B.data[BCounter][TIME]);
 
             var loopCounter = 0;
             //Find first timeslot where both transmitters have receptions
-            while( !ATime.isSame(BTime) &&
-                ATime <= stop && BTime <= stop &&
-                ACounter < A.data.length-1 &&
-                BCounter < B.data.length-1 ) {
+            while (!ATime.isSame(BTime) &&
+                ACounter < A.data.length - 1 &&
+                BCounter < B.data.length - 1) {
                 ++loopCounter;
 
-                while( ATime.isBefore(BTime) && !ATime.isAfter(stop) && ACounter < A.data.length-1 ) {
-                    ATime = dayjs(A.data[++ACounter][1]);
+                while (ATime.isBefore(BTime) && ACounter < A.data.length - 1) {
+                    ATime = dayjs(A.data[++ACounter][TIME]);
                 }
 
-                while( BTime.isBefore(ATime) && !BTime.isAfter(stop) && BCounter < B.data.length-1 ) {
-                    BTime = dayjs(B.data[++BCounter][1]);
+                while (BTime.isBefore(ATime)  && BCounter < B.data.length - 1) {
+                    BTime = dayjs(B.data[++BCounter][TIME]);
                 }
 
-                if( loopCounter > 100000 ) {
-                    console.log("Loop counter exceeded 100000");
+                if (loopCounter > 1000000) {
+                    console.log("Loop counter exceeded 1000000");
                     break;
                 }
             }
-            if( !ATime.isSame(BTime) ){
-                console.log("Reached end of data before finding common timeslot");
+            if (!ATime.isSame(BTime)) {
+                //console.log("Reached end of data before finding common timeslot");
                 break;
             }
-
-            if( ATime.isAfter(stop) || BTime.isAfter(stop) ){
-                console.log("timeslot is after stop time");
-                break;
-            }
-
+            ++CommonTimeslotCounter
             //We have now found a common timeslot
             //After that, find out how many receptions each transmitter has in that timeslot    
 
@@ -74,101 +121,67 @@ async function compare(A, B, start, stop) {
 
             var ATimeEnd = dayjs(ATime);
             var BTimeEnd = dayjs(BTime);
-            do {
+            while (ATimeEnd.isSame(ATime)) {
                 ACounterEnd += 1;
-                if( ACounterEnd >= A.data.length )
+                if (ACounterEnd >= A.data.length)
                     break;
-                ATimeEnd = dayjs(A.data[ACounterEnd][1]);
-            } while( ATimeEnd.isSame(ATime) )
+                ATimeEnd = dayjs(A.data[ACounterEnd][TIME]);
+            }
 
-            do {
+            while (BTimeEnd.isSame(BTime)) {
                 BCounterEnd += 1;
-                if( BCounterEnd >= B.data.length )
+                if (BCounterEnd >= B.data.length)
                     break;
-
-                BTimeEnd = dayjs(B.data[BCounterEnd][1]);
-            } while( BTimeEnd.isSame(BTime) )
+                BTimeEnd = dayjs(B.data[BCounterEnd][TIME]);
+            } 
 
             //We now have the number of receptions for each transmitter in that timeslot
             //Extract subarray with data that is only in this timeslot for easier processing.
 
             var ATimeslotData = A.data.slice(ACounter, ACounterEnd);
             var BTimeslotData = B.data.slice(BCounter, BCounterEnd);
-                
+
             //Both transmitter A and B has receptions in timeslot k.
             //Find out if the same receiver has received both transmissions, if so, add to data
             for (var j = 0; j < ATimeslotData.length; ++j) {
-                const found = BTimeslotData.find(recB => ATimeslotData[j][3] === recB[3]);
-                if (found)
-                outputDataTable.data.push(["" + ATimeslotData[j][0] + "+" + found[0],
-                    ATimeslotData[j][1],
-                    ATimeslotData[j][2],
-                    ATimeslotData[j][3],
-                    ATimeslotData[j][4],
-                    ATimeslotData[j][5],
-                    ATimeslotData[j][6],
-                    ATimeslotData[j][7] + " + " + found[7],
-                    ATimeslotData[j][8],
-                    ATimeslotData[j][9],
-                    ATimeslotData[j][10],
-                    ATimeslotData[j][11],
-                    ATimeslotData[j][12],
-                    ATimeslotData[j][13],
-                    ATimeslotData[j][14],
-                    ATimeslotData[j][15],
-                    ATimeslotData[j][16] - found[16],
-                    ATimeslotData[j][16],
-                    found[16],
-                    ATimeslotData[j][17],
-                    found[17]]);
+                const found = BTimeslotData.find(recB => ATimeslotData[j][RX_SIGN] === recB[RX_SIGN]);
+                if (found) {
+                    outputDataTable.data.push(
+                        [
+                            outputDataTable.data.length,
+                            ATimeslotData[j][TIME],
+                            ATimeslotData[j][BAND],
+                            ATimeslotData[j][RX_SIGN],
+                            ATimeslotData[j][RX_LAT],
+                            ATimeslotData[j][RX_LON],
+                            ATimeslotData[j][RX_LOC],
+                            ATimeslotData[j][TX_SIGN],
+                            ATimeslotData[j][TX_LAT],
+                            ATimeslotData[j][TX_LON],
+                            ATimeslotData[j][TX_LOC],
+                            ATimeslotData[j][DISTANCE],
+                            ATimeslotData[j][AZIMUTH],
+                            ATimeslotData[j][RX_AZIMUTH],
+                            ATimeslotData[j][FREQUENCY],
+                            ATimeslotData[j][POWER] - found[POWER],
+                            ATimeslotData[j][SNR]   - found[SNR],
+                            ATimeslotData[j][DRIFT] - found[DRIFT],
+                            ATimeslotData[j][VERSION] + " AND " + found[VERSION],
+                            ATimeslotData[j][CODE],
+                            ATimeslotData[j][POWER], //power_a
+                            found[POWER],            //power_b
+                            ATimeslotData[j][SNR],   //snr_a
+                            found[SNR],              //snr_b
+                            ATimeslotData[j][DRIFT], //drift_a
+                            found[DRIFT]             //drift_b
+                        ]
+                    );
+                }
             }
             ACounter = ACounterEnd;
             BCounter = BCounterEnd;
         }
-
-        // console.log( outputDataTable );
-
-        /*
-        for (var i = start; i < stop; i = i.add(2, 'minutes')) {
-    
-            var timeslotDataA = A.data.filter(row => {
-                return row[1] === dayjs(i).format("YYYY-MM-DD HH:mm:ss");
-            });
-            var timeslotDataB = B.data.filter(row => {
-                return row[1] === dayjs(i).format("YYYY-MM-DD HH:mm:ss");
-            });
-    
-            if (!timeslotDataA || !timeslotDataB) // No data for this timeslot, search next timeslot
-                continue;
-    
-            //Both transmitter A and B has receptions in timeslot k.
-            //Find out if the same receiver has received both transmissions, if so, add to data
-            for (var j = 0; j < timeslotDataA.length; ++j) {
-                const found = timeslotDataB.find(recB => timeslotDataA[j][3] === recB[3]);
-                if (found)
-                    outputDataTable.data.push(["" + timeslotDataA[j][0] + "+" + found[0],
-                    timeslotDataA[j][1],
-                    timeslotDataA[j][2],
-                    timeslotDataA[j][3],
-                    timeslotDataA[j][4],
-                    timeslotDataA[j][5],
-                    timeslotDataA[j][6],
-                    timeslotDataA[j][7] + " + " + found[7],
-                    timeslotDataA[j][8],
-                    timeslotDataA[j][9],
-                    timeslotDataA[j][10],
-                    timeslotDataA[j][11],
-                    timeslotDataA[j][12],
-                    timeslotDataA[j][13],
-                    timeslotDataA[j][14],
-                    timeslotDataA[j][15],
-                    timeslotDataA[j][16] - found[16],
-                    timeslotDataA[j][16],
-                    found[16],
-                    timeslotDataA[j][17],
-                    found[17]]);
-            }
-        }*/
+        console.log("🛑 Stopwatch took " + (performance.now()-stopwatch) + "ms")
         resolve(outputDataTable);
     });
     return result;

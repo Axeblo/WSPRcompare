@@ -23,6 +23,9 @@ function EntriesCounter({datasets, defaultDatasetIndex}) {
     var dataTable = dataset["dataTable"];
     if(dataTable === undefined)
         return <div className="EntriesCounter error">No dataTable</div>
+    
+    if(dataTable === null)
+        return <div className="EntriesCounter error">No dataTable</div>
  
     if( dataTable.data === undefined )
         return <div className="EntriesCounter">No data</div>;

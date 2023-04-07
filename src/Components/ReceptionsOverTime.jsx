@@ -20,35 +20,39 @@ function ReceptionsOverTime({datasets, start, stop}) {
         for (var i = start; i <= stop; i = i.add(2, 'minutes'))
 			labels.push(dayjs(i).format("DD/MM HH:mm"));
 
-		if (chartRef.current) chartRef.current.destroy();
-
-		chartRef.current = new Chart(
-			canvasRef.current,
-			{
-				type: 'line',
-				data: {
-                    labels: labels
-				},
-				options: {
-					scales: {
-						x: {
-						grid: {
-							display: true,
-							color: '#ffffff22',
-						},
-						},
-						y: {
-						grid: {
-							display: true,
-							color: '#ffffff22',
-						},
-						},
+		if (chartRef.current) {
+			chartRef.current.data = {labels: labels};
+			chartRef.current.update();
+		}
+		else {
+			chartRef.current = new Chart(
+				canvasRef.current,
+				{
+					type: 'line',
+					data: {
+						labels: labels
 					},
-                    maintainAspectRatio: false,
-                    responsive: true,
-				},
-			}
-		);
+					options: {
+						scales: {
+							x: {
+							grid: {
+								display: true,
+								color: '#ffffff22',
+							},
+							},
+							y: {
+							grid: {
+								display: true,
+								color: '#ffffff22',
+							},
+							},
+						},
+						maintainAspectRatio: false,
+						responsive: true,
+					},
+				}
+			);
+		}
 	}
 
     //Every time data changes, update the chart
@@ -132,37 +136,51 @@ function ReceptionsOverTime({datasets, start, stop}) {
 			output.push(temp);
 		})
 
-		if (chartRef.current) chartRef.current.destroy();
-
-		chartRef.current = new Chart(
-			canvasRef.current,
-			{
-				type: 'line',
-				data: {
-                    labels: labels,
-					datasets:
-						datasets.map((row, index)=>{return {label:row.name, fill:true, data:output[index]}}),
-				},
-				options: {
-					scales: {
-						x: {
-						grid: {
-							display: true,
-							color: '#ffffff22',
-						},
-						},
-						y: {
-						grid: {
-							display: true,
-							color: '#ffffff22',
-						},
-						},
+		if (chartRef.current) {
+			chartRef.current.data= {
+				labels: labels,
+				datasets:datasets.map((row, index)=>{
+					return {
+						label:row.name, fill:false, data:output[index], pointRadius: 0, borderWidth: 1.3
+					}
+				})
+			};
+			chartRef.current.update();
+		}
+		else {
+			chartRef.current = new Chart(
+				canvasRef.current,
+				{
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets:datasets.map((row, index)=>{
+							return {
+								label:row.name, fill:false, data:output[index], pointRadius: 0, borderWidth: 1.3
+							}
+						})
 					},
-                    maintainAspectRatio: false,
-                    responsive: true,
-				},
-			}
-		);
+					options: {
+						scales: {
+							x: {
+							grid: {
+								display: true,
+								color: '#ffffff22',
+							},
+							},
+							y: {
+							grid: {
+								display: true,
+								color: '#ffffff22',
+							},
+							},
+						},
+						maintainAspectRatio: false,
+						responsive: true,
+					},
+				}
+			);
+		}
 	}, [datasets]);
 
     return <div className="ReceptionsOverTime"><div className="ErrorMessage">{errorMessage}</div><canvas style={{width:"100%", height:"100%"}} id="number_of_receptions" ref={canvasRef}></canvas></div>

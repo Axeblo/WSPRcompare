@@ -7,10 +7,22 @@
 }
 
 .MainPanel {
-  height: calc(100vh - 400px);
+  height: calc(100vh - 500px);
   width: 100%;
   overflow: auto;
+  overflow-x:hidden;
   margin: 0;
+}
+
+.BottomBar {
+  position:relative;
+  box-sizing: border-box;
+  height: 500px;
+  width: 100%;
+  box-shadow: 0 0 40px #00000066;
+  /* resize:vertical;
+  overflow:auto; */
+  /* border-top: 1px solid rgb(171, 171, 171); */
 }
 
 .fullHeight {
@@ -18,7 +30,7 @@
 }
 
 .layout {
-  max-width: 1000px;
+  /* max-width: 1000px; */
   margin: 0 auto;
 }
 
@@ -171,4 +183,26 @@
   left: 0;
   width: 100%;
   /* background-color: red; */
+}
+
+.ShowDataPanelButton {
+  position: absolute !important;
+  bottom: 0;
+  right: 20px
+}
+
+
+button.BottomBarClose {
+  position: absolute !important;
+  top: 10px;
+  right: 10px;
+  height: 30px;
+}
+
+.ol-control button {
+  background-color: #181b1f !important;
+}
+
+.ol-control {
+  background-color: transparent !important;
 }

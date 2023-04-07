@@ -82,12 +82,8 @@ function Variance({datasets, defaultDatasetIndex}) {
             setIncompatibleData(false);
 
         const mean = dataTable.data.reduce((acc, row) => acc + row[column], 0) / dataTable.data.length;
-        const sq = dataTable.data.map(row => {
-            const deviation = row[selectDataset] - mean;
-            return deviation * deviation;
-        });
-
-        const variance = sq.reduce((acc, curr) => ( acc + curr) / dataTable.data.length, 0);
+        const sq = dataTable.data.map(row =>Math.pow( row[column] - mean, 2) )
+        const variance = sq.reduce((acc, curr) => acc + curr,0) / dataTable.data.length;
         setValue(variance);
     },[datasets, selectDataset, column]);
 
@@ -101,7 +97,7 @@ function Variance({datasets, defaultDatasetIndex}) {
     return (
     <>
         {incompatibleData&&(<span className="VarianceNumber" style={{fontSize:"20px"}} title="🤷‍♀️">Incompatible 😔</span>)}
-        {(!incompatibleData)&&(<span className="VarianceNumber" title={value.toFixed(1)}>{value.toFixed(1)}</span>)}
+        {(!incompatibleData)&&(<span className="VarianceNumber" title={value.toFixed(1)}>{value.toFixed(2)}</span>)}
         <Button
             variant="text"
             onClick={(e)=>setAnchorEl(e.currentTarget)}
@@ -115,7 +111,7 @@ function Variance({datasets, defaultDatasetIndex}) {
                 vertical: 'bottom',
                 horizontal: 'left',
             }} >
-            <Typography sx={{ p: 2 }}>
+            <div style={{padding:"15px"}}>
                 <TextField
                     value={selectDataset}
                     onChange={(e) => setSelectDataset(e.target.value)}
@@ -134,7 +130,7 @@ function Variance({datasets, defaultDatasetIndex}) {
                     style={{width: "120px"}} >
                     {datasets[selectDataset].dataTable.meta.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
                 </TextField>
-            </Typography>
+            </div>
         </Popover>
     </>);
 }

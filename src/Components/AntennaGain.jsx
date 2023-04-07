@@ -132,8 +132,12 @@ function AntennaGain({datasets, defaultDatasetIndex}) {
         const bucketCount = Math.floor(360/bucketSize);
 
         var buckets = [];
+        var buckets2 = [];
+        var buckets3 = [];
         for (var i = 0; i < bucketCount; ++i ) {
             buckets.push([]);
+            buckets2.push([]);
+            buckets3.push([]);
         }
         var labels = Array(bucketCount);
 
@@ -144,9 +148,18 @@ function AntennaGain({datasets, defaultDatasetIndex}) {
         dataTable.data.forEach(row => {
             const bucketIndex = Math.floor(row[12]/bucketSize);
             buckets[bucketIndex].push(row[16]);
+
+            if( row[11] > 500)
+                buckets2[bucketIndex].push(row[16]);
+            else
+                buckets3[bucketIndex].push(row[16]);
         });
 
         let output = buckets.map((bucket) => { return bucket.reduce((sum, value) => value+sum, 0)/bucket.length; });
+        let output2 = buckets2.map((bucket) => { return bucket.reduce((sum, value) => value+sum, 0)/bucket.length; });
+        let output3 = buckets3.map((bucket) => { return bucket.reduce((sum, value) => value+sum, 0)/bucket.length; });
+
+        let unitAntenna = labels.map(()=>1)
 
         gainChartRef.current = new Chart(
         chartRef.current,
@@ -156,20 +169,42 @@ function AntennaGain({datasets, defaultDatasetIndex}) {
                 labels: labels,
                 datasets: [
                     {
-                    label: "SNR Difference",
-                    data: output
+                        label: "<500km",
+                        data: output3,
+                        fill: false,
+                        // borderColor: "",
+                    },
+                    {
+                        label: ">500km",
+                        data: output2,
+                        fill: false,
+                        // borderColor: "limeGreen",
+                    },
+                    {
+                        label: "All",
+                        data: output,
+                        fill: false,
+                        // borderColor: "limeGreen",
+                    },
+                    {
+                        label: "Unit",
+                        data: unitAntenna,
+                        pointRadius: 0,
+                        borderWidth: 2.0,
+                        // borderColor: "red",
+                        fill: false
                     }
                 ]
                 },
                 options: {
                     scale: {
-                        /*min: -10,*/
+                        min: -30,
                     },
                     scales: {
                         r: {
                             ticks: {
-                            color: 'transparent',
-                            backdropColor: 'transparent'
+                            color: 'gray',
+                            backdropColor: '#00000055'
                             },
                             grid: {
                             color: '#ffffff33',
@@ -182,9 +217,9 @@ function AntennaGain({datasets, defaultDatasetIndex}) {
                     },
                     plugins:{
                         legend: {
-                            position: "right",
+                            position: "top",
                             align: "middle",
-                            display: false
+                            display: true
                         },
                     },
                     maintainAspectRatio: false,

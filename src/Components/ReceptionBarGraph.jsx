@@ -15,41 +15,43 @@ function ReceptionBarGraph({datasets, defaultDatasetIndex}) {
 
 	function createEmptyGraph() {
 		if (chartRef.current !== null){
-			chartRef.current.destroy();
-			chartRef.current = null;
+			chartRef.current.data = {};
+			chartRef.current.update();
 		}
-		
-		chartRef.current = new Chart(
-			canvasRef.current,
-			{
-				type: 'bar',
-				data: {
-				},
-				options: {
-					scales: {
-						x: {
-							grid: {
-								display: true,
-								color: '#ffffff22',
-							},
-						},
-						y: {
-							grid: {
-								display: true,
-								color: '#ffffff22',
-							},
-						}
+		else {
+			chartRef.current = new Chart(
+				canvasRef.current,
+				{
+					type: 'bar',
+					data: {
 					},
-
-                    maintainAspectRatio: false,
-                    responsive: true,
-				},
-			}
-		);
+					options: {
+						scales: {
+							x: {
+								grid: {
+									display: true,
+									color: '#ffffff22',
+								},
+							},
+							y: {
+								grid: {
+									display: true,
+									color: '#ffffff22',
+								},
+							}
+						},
+	
+						maintainAspectRatio: false,
+						responsive: true,
+					},
+				}
+			);
+		}
 	}
 
     //Every time data changes, update the chart
 	useEffect(() => {
+		
 		setErrorMessage(null);
 		if( !Array.isArray(datasets) ){
 			setErrorMessage("Invalid datasets");
@@ -111,56 +113,62 @@ function ReceptionBarGraph({datasets, defaultDatasetIndex}) {
 			return;
 		}
 
-		if (chartRef.current !== null){
-			chartRef.current.destroy();
-			chartRef.current = null;
+		if( dataTable.data.length > 10000 ) {
+			setErrorMessage("Number of entries is too high😑");
+			createEmptyGraph();
+			return;
 		}
-		
-		chartRef.current = new Chart(
-			canvasRef.current,
-			{
-				type: 'bar',
-				data: {
-					labels: dataTable.data.map(row => dayjs(row[1]).format("DD/MM HH:mm")),
-					datasets: [
-						{
-							label: 'SNR difference',
-							data: dataTable.data.map(row => row[16])
-						}
-					]
-				},
-				options: {
-					scales: {
-						x: {
-							grid: {
-								display: true,
-								color: '#ffffff22',
-							},
-						},
-						y: {
-							grid: {
-								display: true,
-								color: '#ffffff22',
-							},
-						}
-					},
+		if (chartRef.current){
+			//chartRef.current.destroy();
+			//chartRef.current = null;
 
-                    maintainAspectRatio: false,
-                    responsive: true,
-				},
-			}
-		);
+			chartRef.current.data.labels = dataTable.data.map(row => dayjs(row[1]).format("DD/MM HH:mm"))
+			chartRef.current.data.datasets = [
+				{
+					label: 'SNR difference',
+					data: dataTable.data.map(row => row[16])
+				}
+			]
+			chartRef.current.update();
+		}
+		else {
+			chartRef.current = new Chart(
+				canvasRef.current,
+				{
+					type: 'bar',
+					data: {
+						labels: dataTable.data.map(row => dayjs(row[1]).format("DD/MM HH:mm")),
+						datasets: [
+							{
+								label: 'SNR difference',
+								data: dataTable.data.map(row => row[16])
+							}
+						]
+					},
+					options: {
+						scales: {
+							x: {
+								grid: {
+									display: true,
+									color: '#ffffff22',
+								},
+							},
+							y: {
+								grid: {
+									display: true,
+									color: '#ffffff22',
+								},
+							}
+						},
+
+						maintainAspectRatio: false,
+						responsive: true,
+					},
+				}
+			);
+		}
 
 	}, [selectDataset, datasets]);
-
-	if (!Array.isArray(datasets) || 
-        datasets[selectDataset] === undefined ||
-        datasets[selectDataset].dataTable === undefined ||
-        datasets[selectDataset].dataTable === null ||
-        !Array.isArray(datasets[selectDataset].dataTable.data) ||
-		errorMessage !== null ){
-		return <div className="ReceptionBarGraph"><div className="ErrorMessage">{errorMessage}</div><canvas id="ReceptionBarGraphHande" ref={canvasRef}></canvas></div>;
-	}
 
     return (
 	<div className="ReceptionBarGraph">
@@ -174,7 +182,7 @@ function ReceptionBarGraph({datasets, defaultDatasetIndex}) {
 			{datasets.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
 		</TextField>}
 		<canvas id="ReceptionBarGraphHande" ref={canvasRef}></canvas>
-		{errorMessage&&<span>{errorMessage}</span>}
+		{errorMessage&&<div className="ErrorMessage">{errorMessage}</div>}
 </div>);
 }
 

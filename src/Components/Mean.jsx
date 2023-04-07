@@ -111,7 +111,7 @@ function Mean({datasets, defaultDatasetIndex}) {
                 vertical: 'bottom',
                 horizontal: 'left',
             }} >
-            <Typography sx={{ p: 2 }}>
+            <div style={{padding:"15px"}}>
                 <TextField
                     value={selectDataset}
                     onChange={(e) => setSelectDataset(e.target.value)}
@@ -131,7 +131,7 @@ function Mean({datasets, defaultDatasetIndex}) {
                     style={{width: "120px"}} >
                     {datasets[selectDataset].dataTable.meta.map((row,index)=><MenuItem key={index} value={index}>{row.name}</MenuItem>)}
                 </TextField>
-            </Typography>
+            </div>
         </Popover>
     </>);
 }

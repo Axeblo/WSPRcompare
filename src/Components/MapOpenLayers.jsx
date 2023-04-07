@@ -12,11 +12,13 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import VectorLayer from 'ol/layer/Vector';
+import VectorImageLayer from 'ol/layer/VectorImage';
 import VectorSource from 'ol/source/Vector';
 
 
 function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 	const mapRef = React.useRef(null);
+	const tooltipRef = React.useRef();
 	const circleLayerRef = React.useRef();
 	const [errorMessage, setErrorMessage] = React.useState(null);
 	const [mapStore, setMapStore] = React.useState(null);
@@ -24,7 +26,7 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 	function createEmptyMap() {
 		var center = [0,0];
 
-		const circleLayer = new VectorLayer({
+		const circleLayer = new VectorImageLayer({
 			source: new VectorSource()
 		});
 		circleLayerRef.current = circleLayer;
@@ -62,7 +64,7 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 				new TileLayer({
 					source: new XYZ({
 						url: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-						attributions: '© <a href="https://carto.com/attributions">CARTO</a>',
+						// attributions: '© <a href="https://carto.com/attributions">CARTO</a>',
 						crossOrigin: 'anonymous'
 					})
 				}),
@@ -80,7 +82,36 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 	}
 
 	useEffect(() => {
-		setErrorMessage(null);
+		if (mapStore) {
+			const map = mapStore;
+			// return;
+			// Add pointermove event listener to the map
+			// map.on("pointermove", (event) => {
+			// 	if (event.dragging) return;
+			// 	const pixel = map.getEventPixel(event.originalEvent);
+			// 	const hit = map.hasFeatureAtPixel(pixel);
+
+			// 	const containerRect = mapRef.current.getBoundingClientRect();
+
+			// 	// If the pointer is over a circle, show the tooltip
+			// 	if (hit) {
+			// 		const feature = map.forEachFeatureAtPixel(pixel, (f) => f);
+        	// 		const info = feature.get('info');
+
+			// 		tooltipRef.current.innerHTML = info;
+			// 		tooltipRef.current.style.display = "block";
+			// 		tooltipRef.current.style.left = `${event.originalEvent.clientX - containerRect.left + 10}px`;
+			// 		tooltipRef.current.style.top = `${event.originalEvent.clientY - containerRect.top + 10}px`;
+			// 	} else {
+			// 		tooltipRef.current.style.display = "none";
+			// 	}
+			// });
+		}
+	}, [mapStore]);
+
+	useEffect(() => {
+		if( !mapStore ) {
+			setErrorMessage(null);
 
 		if( !Array.isArray(datasets) ){
 			setErrorMessage("Invalid datasets")
@@ -142,8 +173,8 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 			return;
 		}
 
-		const circleLayer = new VectorLayer({
-			source: new VectorSource()
+		const circleLayer = new VectorImageLayer({
+			source: new VectorSource(),
 		});
 
 		//Define circle styles
@@ -186,6 +217,8 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 			})
 
 			feature.setStyle(redCircleStyle);
+			feature.set('info', dataTable.data[0][7]);
+
 			circleLayer.getSource().addFeature(feature);
 		}
 		dataTable.data.forEach((row) => {
@@ -195,17 +228,19 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 
 			
 			feature.setStyle(greenCircleStyle);
+			feature.set('info', row[3]);
 			circleLayer.getSource().addFeature(feature);
 		});
 		
 		
 		const map = new Map({
+			// renderer: (['webgl', 'canvas']),
 			target: mapRef.current,
 			layers: [
 				new TileLayer({
 					source: new XYZ({
 						url: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-						attributions: '© <a href="https://carto.com/attributions">CARTO</a>',
+						// attributions: '© <a href="https://carto.com/attributions">CARTO</a>',
 						crossOrigin: 'anonymous'
 					})
 				}),
@@ -219,14 +254,14 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 				new Zoom()
 			])
 		});
+
 		setMapStore(map);
-	}, []);
-	useEffect(() => {
-		if( !mapStore ) return;
+			return;
+		}
 		//Get the circle layer
 		const circleLayer = circleLayerRef.current;
 		if( !circleLayer ){
-			console.log("No circleLayer found");
+			console.log("No circleLayer found"); 
 			return;
 		} 
 		const source = circleLayer.getSource();
@@ -324,6 +359,7 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 			});
 			
 			feature.setStyle(greenCircleStyle);
+			feature.set('info', row[3]);
 			source.addFeature(feature);
 		});
 
@@ -335,7 +371,9 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 			})
 
 			feature.setStyle(redCircleStyle);
+			feature.set('info', dataTable.data[0][7]);
 			circleLayer.getSource().addFeature(feature);
+
 		}
 		
 		// Update the map center when the coordinates prop changes
@@ -344,6 +382,35 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 		view.setCenter(fromLonLat(center));
 
 	}, [datasets] );
+
+	return (
+		<div
+		  style={{
+			position: "relative",
+			width: "100%",
+			height: "100%",
+		  }}
+		>
+		  <div ref={mapRef} style={{ width: "100%", height: "100%" }}>
+			{errorMessage && <span>{errorMessage}</span>}
+		  </div>
+		  <div
+			ref={tooltipRef}
+			style={{
+			  position: "fixed",
+			  backgroundColor: "#181b1f",
+			  border: "1px solid #ccccdc12",
+			  padding: "5px",
+			  borderRadius: "5px",
+			  display: "none",
+			  fontSize: "14px",
+			  zIndex: 1000,
+			  pointerEvents: "none",
+			  color: "rgb(204,204,204)"
+			}}
+		  ></div>
+		</div>
+	  );
 
 	return <div ref={mapRef} style={{ width: '100%', height: '100%' }}>{errorMessage&&(<span>{errorMessage}</span>)}</div>;
 }
