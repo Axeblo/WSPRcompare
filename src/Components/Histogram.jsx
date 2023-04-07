@@ -88,6 +88,13 @@ function Histogram({ datasets, defaultDatasetIndex }) {
                         },
                         maintainAspectRatio: false,
                         responsive: true,
+                        plugins:{
+                            legend: {
+                                position: "top",
+                                align: "middle",
+                                display: false
+                            },
+                        },
                     },
                 }
             );
@@ -294,6 +301,13 @@ function Histogram({ datasets, defaultDatasetIndex }) {
                         },
                         maintainAspectRatio: false,
                         responsive: true,
+                        plugins:{
+                            legend: {
+                                position: "top",
+                                align: "middle",
+                                display: false
+                            },
+                        },
                     },
                 }
             );
