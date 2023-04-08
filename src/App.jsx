@@ -78,8 +78,10 @@ function App() {
 	
 	function submitButton(e) {
 		clearInterval(autoUpdateIntervalRef.current);
-		if( autoUpdate > -1 ) autoUpdateIntervalRef.current = setInterval(submitButton, autoUpdate * 60 * 1000);
-
+		if( autoUpdate > -1 ) autoUpdateIntervalRef.current = setInterval(fetchData, autoUpdate * 60 * 1000);
+		fetchData();
+	}
+	function fetchData() {
 		startRef.current    = dayjs(startInputRef.current.value.trim().replace(/[^\x00-\x7F]/g, ""));
 		if( stopTimeNowChecked ) {
 			stopRef.current = dayjs()
@@ -205,7 +207,7 @@ function App() {
 												setAutoUpdate(e.target.value)
 												clearInterval(autoUpdateIntervalRef.current);
 												if(e.target.value > -1)
-													autoUpdateIntervalRef.current = setInterval(submitButton, e.target.value * 60 * 1000)
+													autoUpdateIntervalRef.current = setInterval(fetchData, e.target.value * 60 * 1000)
 											}
 										}
 										defaultValue={-1}
@@ -215,13 +217,14 @@ function App() {
 										size="small"
 									>
 										<MenuItem key={1} value="-1">None</MenuItem>
-										<MenuItem key={2} value="2">2 min</MenuItem>
-										<MenuItem key={3} value="4">4 min</MenuItem>
-										<MenuItem key={4} value="10">10 min</MenuItem>
-										<MenuItem key={5} value="20">20 min</MenuItem>
-										<MenuItem key={6} value="30">30 min</MenuItem>
-										<MenuItem key={7} value="60">1 hour</MenuItem>
-										<MenuItem key={8} value="120">2 hour</MenuItem>
+										<MenuItem key={2} value="1">1 min</MenuItem>
+										<MenuItem key={3} value="2">2 min</MenuItem>
+										<MenuItem key={4} value="4">4 min</MenuItem>
+										<MenuItem key={5} value="10">10 min</MenuItem>
+										<MenuItem key={6} value="20">20 min</MenuItem>
+										<MenuItem key={7} value="30">30 min</MenuItem>
+										<MenuItem key={8} value="60">1 hour</MenuItem>
+										<MenuItem key={9} value="120">2 hour</MenuItem>
 									</TextField>
 							</div>
 							<div className="Wrapper" style={{textAlign:"left"}}>
