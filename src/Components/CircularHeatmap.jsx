@@ -106,7 +106,7 @@ function createCircularHeatMap(data, selector) {
 
     var colorScale = d3.scaleLinear()
         .domain([0, majorDataMax*1/3, majorDataMax*2/3, majorDataMax])
-        .range(["#352033", "red", "blue", "white"]);
+        .range(["#39356f", "#56c3bc", "#f9e84e", "#cb0c1d"]);
 
 
 

@@ -85,27 +85,30 @@ function MapOpenLayers({ datasets, defaultDatasetIndex }) {
 		if (mapStore) {
 			const map = mapStore;
 			// return;
-			// Add pointermove event listener to the map
-			// map.on("pointermove", (event) => {
-			// 	if (event.dragging) return;
-			// 	const pixel = map.getEventPixel(event.originalEvent);
-			// 	const hit = map.hasFeatureAtPixel(pixel);
+			//Add pointermove event listener to the map
+			map.on("click", (event) => {
+				if (event.dragging) return;
+				const pixel = map.getEventPixel(event.originalEvent);
+				const hit = map.hasFeatureAtPixel(pixel);
 
-			// 	const containerRect = mapRef.current.getBoundingClientRect();
+				const containerRect = mapRef.current.getBoundingClientRect();
 
-			// 	// If the pointer is over a circle, show the tooltip
-			// 	if (hit) {
-			// 		const feature = map.forEachFeatureAtPixel(pixel, (f) => f);
-        	// 		const info = feature.get('info');
+				// If the pointer is over a circle, show the tooltip
+				if (hit) {
+					const feature = map.forEachFeatureAtPixel(pixel, (f) => f);
+        			const info = feature.get('info');
 
-			// 		tooltipRef.current.innerHTML = info;
-			// 		tooltipRef.current.style.display = "block";
-			// 		tooltipRef.current.style.left = `${event.originalEvent.clientX - containerRect.left + 10}px`;
-			// 		tooltipRef.current.style.top = `${event.originalEvent.clientY - containerRect.top + 10}px`;
-			// 	} else {
-			// 		tooltipRef.current.style.display = "none";
-			// 	}
-			// });
+					tooltipRef.current.innerHTML = info;
+					tooltipRef.current.style.display = "block";
+					tooltipRef.current.style.left = `${event.originalEvent.clientX - containerRect.left + 10}px`;
+					tooltipRef.current.style.top = `${event.originalEvent.clientY - containerRect.top + 10}px`;
+				} else {
+					tooltipRef.current.style.display = "none";
+				}
+			});
+			map.on("movestart", (event) => {
+				tooltipRef.current.style.display = "none";
+			});
 		}
 	}, [mapStore]);
 
