@@ -28,6 +28,7 @@ import Mean                                    from './Components/Mean';
 import EntriesCounter                          from './Components/EntriesCounter';
 import Variance                                from './Components/Variance';
 import StandardDeviation                       from './Components/StandardDeviation';
+import CircularHeatmap                         from './Components/CircularHeatmap';
 
 //MUI         
 import Button                                  from '@mui/material/Button';
@@ -176,14 +177,14 @@ function App() {
 							<div className="Wrapper">
 								<DateTimePicker
 									inputRef={startInputRef}
-									defaultValue={dayjs('2023-04-03 15:00')}
+									defaultValue={dayjs('2023-04-14 9:00')}
 									label="Start"
 									className="DateTimePicker"
 									format="YYYY-MM-DD HH:mm"/>
 								<div style={{display:"inline-block", width: 10}}></div>
 								<DateTimePicker
 									inputRef={stopInputRef}
-									defaultValue={dayjs('2023-04-03 18:00')}
+									defaultValue={dayjs('2023-04-18 12:00')}
 									label="Stop"
 									className="DateTimePicker"
 									disabled={stopTimeNowChecked}
@@ -230,7 +231,7 @@ function App() {
 							<div className="Wrapper" style={{textAlign:"left"}}>
 									<TextField
 									inputRef={TXSignAInputRef}
-									defaultValue={"HB9T"}
+									defaultValue={"SK0WE"}
 									label="tx_sign A"
 									id="outlined-basic"
 									className="TXInput"
@@ -239,7 +240,7 @@ function App() {
 								<div style={{display:"inline-block", width: 10}}></div>
 								<TextField
 									inputRef={TXSignBInputRef}
-									defaultValue={"IU2PJI"}
+									defaultValue={"SK0WE/0"}
 									label="tx_sign B"
 									id="outlined-basic"
 									className="TXInput"
@@ -257,9 +258,10 @@ function App() {
 									<MenuItem key={1} value="7">7 MHz</MenuItem>
 									<MenuItem key={2} value="10">10 MHz</MenuItem>
 									<MenuItem key={3} value="14">14 MHz</MenuItem>
-									<MenuItem key={4} value="21">21 MHz</MenuItem>
-									<MenuItem key={5} value="24">24 MHz</MenuItem>
-									<MenuItem key={6} value="28">28 MHz</MenuItem>
+									<MenuItem key={4} value="18">18 MHz</MenuItem>
+									<MenuItem key={5} value="21">21 MHz</MenuItem>
+									<MenuItem key={6} value="24">24 MHz</MenuItem>
+									<MenuItem key={7} value="28">28 MHz</MenuItem>
 								</TextField>
 								<div style={{display:"inline-block", width: 10}}></div>
 								<Button variant="contained" size="medium" style={{ height: 40 }} onClick={submitButton}><SearchIcon/></Button>
@@ -275,13 +277,14 @@ function App() {
 											{ i: "MapA",               x: 0, y: 4,  w: 2, h: 2, static: false },
 											{ i: "MapB",               x: 0, y: 6,  w: 2, h: 2, static: false },
 											{ i: "MapC",               x: 0, y: 7,  w: 2, h: 2, static: false },
-											{ i: "GainPattern",        x: 0, y: 9, w: 2, h: 3, static: false },
+											{ i: "GainPattern",        x: 0, y: 9,  w: 2, h: 3, static: false },
 											{ i: "Histogram",          x: 0, y: 12, w: 2, h: 2, static: false },
 											{ i: "Mean",               x: 0, y: 14, w: 1, h: 1, static: false },
 											{ i: "Variance",           x: 1, y: 14, w: 1, h: 1, static: false },
 											{ i: "SD",                 x: 0, y: 15, w: 2, h: 1, static: false },
 											{ i: "SpotsOverTime",      x: 0, y: 17, w: 2, h: 2, static: false },
 											{ i: "BarGraph",           x: 0, y: 19, w: 2, h: 2, static: false },
+											{ i: "HM",                 x: 0, y: 21, w: 2, h: 3, static: false }
 										],
 										md:[
 											{ i: "DatapointsA",        x: 2, y: 0, w: 2, h: 1, static: false },
@@ -297,6 +300,8 @@ function App() {
 											{ i: "Mean",               x: 3, y: 5, w: 1, h: 1, static: false },
 											{ i: "Variance",           x: 3, y: 6, w: 1, h: 1, static: false },
 											{ i: "SD",                 x: 3, y: 7, w: 1, h: 1, static: false },
+											{ i: "HM",                 x: 0, y: 9, w: 3, h: 3, static: false }
+
 										],
 										lg:[
 											{ i: "DatapointsA",        x: 0, y: 0, w: 2, h: 1, static: false },
@@ -312,6 +317,7 @@ function App() {
 											{ i: "Mean",               x: 0, y: 6, w: 1, h: 1, static: false },
 											{ i: "Variance",           x: 1, y: 6, w: 1, h: 1, static: false },
 											{ i: "SD",                 x: 2, y: 6, w: 1, h: 1, static: false },
+											{ i: "HM",                 x: 3, y: 9, w: 3, h: 3, static: false }
 										],
 										xl:[
 											{ i: "DatapointsA",        x: 0, y: 0, w: 2, h: 1, static: false },
@@ -327,6 +333,7 @@ function App() {
 											{ i: "Mean",               x: 7, y: 3, w: 1, h: 1, static: false },
 											{ i: "Variance",           x: 7, y: 4, w: 1, h: 1, static: false },
 											{ i: "SD",                 x: 7, y: 5, w: 1, h: 1, static: false },
+											{ i: "HM",                 x: 3, y: 6, w: 4, h: 3, static: false }
 										]
 									}
 								}
@@ -416,6 +423,13 @@ function App() {
 									<div className="PanelHeader">Standard deviation</div>
 									<div className="PanelContent" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
 										<StandardDeviation datasets={datasets} defaultDatasetIndex={2}/>
+									</div>
+								</div>
+								<div className="PanelContainer" key="HM">
+									<div className="PanelHeader">Circular histogram heatmap</div>
+									<div className="PanelContent" onMouseDown={e => e.stopPropagation()}>
+										{/* <AntennaGain datasets={datasets} defaultDatasetIndex={2} /> */}
+										<CircularHeatmap datasets={datasets} defaultDatasetIndex={2}/>
 									</div>
 								</div>
 							</ResponsiveGridLayout>
