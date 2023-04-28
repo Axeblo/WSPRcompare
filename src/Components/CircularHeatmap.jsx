@@ -44,9 +44,10 @@ function createCircularHeatMap(data, selector) {
     const numSlices = 360/sliceSize
     
     
-    let minSNR = d3.min(data,d=>d[SNR])    
-    let maxSNR = d3.max(data,d=>d[SNR])
-    var numberOfBuckets = maxSNR-minSNR; // each histogram is a column, so number of rows in column
+    const minSNR = d3.min(data,d=>d[SNR])    
+    const maxSNR = d3.max(data,d=>d[SNR])
+    const bucketSize = 2 // two dBm bucket size
+    var numberOfBuckets = Math.ceil((maxSNR-minSNR+1)/bucketSize) // each histogram is a column, so number of rows in column
 
     let cellHeight = (outer_radius-inner_radius)/numberOfBuckets; //Cell row height
     const svgRoot =
@@ -175,8 +176,26 @@ function createCircularHeatMap(data, selector) {
 
         .text(minSNR+"dBm")
 
+    //Theta axis
+    function thetaAxis(g) {
+        g
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .selectAll("g")
+          .data(theta.ticks(numSlices).splice(1))
+          .join("g")
+            .call(g => g.append("path")
+                .attr("stroke", "#fff")
+                .attr("stroke-opacity", .08)
+                .attr("d", d => `
+                  M${d3.pointRadial(theta(d), inner_radius-4)}
+                  L${d3.pointRadial(theta(d), outer_radius+4)}
+                `))
+    }
+    svg.append("g")
+        .call(thetaAxis);
 
-    //Each cell
+    //Draw each cell
     svg.append('g').selectAll('path')
         .data(majorData)
         .join("path")
@@ -236,8 +255,17 @@ function createCircularHeatMap(data, selector) {
         .join("circle")
         .attr("class", "radarCircle")
         .attr("r", 4)
-        .attr("cx", d=>(inner_radius+(d.value-minSNR)*cellHeight)*Math.cos(theta(d.azimuth)-Math.PI/2+thetaOffset) )
-        .attr("cy", d=>(inner_radius+(d.value-minSNR)*cellHeight)*Math.sin(theta(d.azimuth)-Math.PI/2+thetaOffset))
+        .attr("cx", d=>{
+            const r = inner_radius + (d.value-minSNR)/bucketSize*cellHeight+cellHeight/2.0
+            const thisTheta = theta(d.azimuth)-Math.PI/2+thetaOffset
+            return r*Math.cos(thisTheta)
+        })
+
+        .attr("cy", d=>{
+            const r = inner_radius + (d.value-minSNR)/bucketSize*cellHeight+cellHeight/2.0
+            const thisTheta = theta(d.azimuth)-Math.PI/2+thetaOffset
+            return r*Math.sin(thisTheta)
+        })
         .style("fill", "white")
         .style("fill-opacity", 1)
         .on('mouseover', (event,d)=>{
