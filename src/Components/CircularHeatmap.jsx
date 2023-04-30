@@ -202,7 +202,7 @@ function createCircularHeatMap(data, selector) {
             .attr("fill", d=>((d.length===0)?"#222":colorScale(d.length)))
             .style("transition", "opacity 1s")
             .on('mouseover', (event,d)=>{
-                d3.select('#status').text(majorData.filter(d2=>d2.sliceBegin===d.sliceBegin&&d2.length>0).length+" spots");
+                d3.select('#status').text(majorData.filter(d2=>d2.sliceBegin===d.sliceBegin&&d2.length>0).reduce((acc,add)=>acc+add.length, 0)+" spots");
                 for(var s = 0; s<360; s+=sliceSize) {
                     if(s ===d.sliceBegin) continue;
                     d3.selectAll('.slice'+s).style("opacity",0.3)
