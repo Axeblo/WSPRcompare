@@ -294,13 +294,13 @@ function App() {
 											{ i: "MapB",               x: 0, y: 2, w: 2, h: 2, static: false },
 											{ i: "MapC",               x: 0, y: 4, w: 2, h: 2, static: false },
 											{ i: "GainPattern",        x: 2, y: 3, w: 2, h: 3, static: false },
-											{ i: "BarGraph",           x: 0, y: 10,w: 3, h: 2, static: false },
-											{ i: "Histogram",          x: 0, y: 6, w: 3, h: 2, static: false },
-											{ i: "SpotsOverTime",      x: 0, y: 8, w: 3, h: 2, static: false },
-											{ i: "Mean",               x: 3, y: 5, w: 1, h: 1, static: false },
-											{ i: "Variance",           x: 3, y: 6, w: 1, h: 1, static: false },
-											{ i: "SD",                 x: 3, y: 7, w: 1, h: 1, static: false },
-											{ i: "HM",                 x: 0, y: 9, w: 3, h: 3, static: false }
+											{ i: "BarGraph",           x: 0, y: 13,w: 4, h: 2, static: false },
+											{ i: "Histogram",          x: 0, y: 6, w: 4, h: 2, static: false },
+											{ i: "SpotsOverTime",      x: 0, y: 11,w: 4, h: 2, static: false },
+											{ i: "Mean",               x: 3, y: 8, w: 1, h: 1, static: false },
+											{ i: "Variance",           x: 3, y: 9, w: 1, h: 1, static: false },
+											{ i: "SD",                 x: 3, y: 10, w: 1, h: 1, static: false },
+											{ i: "HM",                 x: 0, y: 8, w: 3, h: 3, static: false }
 
 										],
 										lg:[
@@ -312,12 +312,12 @@ function App() {
 											{ i: "MapC",               x: 4, y: 1, w: 2, h: 2, static: false },
 											{ i: "GainPattern",        x: 4, y: 3, w: 2, h: 3, static: false },
 											{ i: "BarGraph",           x: 0, y: 8, w: 3, h: 2, static: false },
-											{ i: "Histogram",          x: 0, y: 3, w: 4, h: 3, static: false },
-											{ i: "SpotsOverTime",      x: 3, y: 6, w: 3, h: 2, static: false },
-											{ i: "Mean",               x: 0, y: 6, w: 1, h: 1, static: false },
-											{ i: "Variance",           x: 1, y: 6, w: 1, h: 1, static: false },
-											{ i: "SD",                 x: 2, y: 6, w: 1, h: 1, static: false },
-											{ i: "HM",                 x: 3, y: 9, w: 3, h: 3, static: false }
+											{ i: "Histogram",          x: 0, y: 3, w: 3, h: 3, static: false },
+											{ i: "SpotsOverTime",      x: 0, y: 6, w: 3, h: 2, static: false },
+											{ i: "Mean",               x: 3, y: 3, w: 1, h: 1, static: false },
+											{ i: "Variance",           x: 3, y: 4, w: 1, h: 1, static: false },
+											{ i: "SD",                 x: 3, y: 5, w: 1, h: 1, static: false },
+											{ i: "HM",                 x: 3, y: 6, w: 3, h: 3, static: false }
 										],
 										xl:[
 											{ i: "DatapointsA",        x: 0, y: 0, w: 2, h: 1, static: false },
@@ -327,13 +327,13 @@ function App() {
 											{ i: "MapB",               x: 2, y: 1, w: 2, h: 2, static: false },
 											{ i: "MapC",               x: 4, y: 1, w: 2, h: 2, static: false },
 											{ i: "GainPattern",        x: 6, y: 0, w: 2, h: 3, static: false },
-											{ i: "BarGraph",           x: 0, y: 5, w: 3, h: 2, static: false },
-											{ i: "Histogram",          x: 3, y: 3, w: 4, h: 3, static: false },
-											{ i: "SpotsOverTime",      x: 0, y: 3, w: 3, h: 2, static: false },
-											{ i: "Mean",               x: 7, y: 3, w: 1, h: 1, static: false },
-											{ i: "Variance",           x: 7, y: 4, w: 1, h: 1, static: false },
-											{ i: "SD",                 x: 7, y: 5, w: 1, h: 1, static: false },
-											{ i: "HM",                 x: 3, y: 6, w: 4, h: 3, static: false }
+											{ i: "BarGraph",           x: 0, y: 6, w: 3, h: 2, static: false },
+											{ i: "Histogram",          x: 0, y: 3, w: 4, h: 3, static: false },
+											{ i: "SpotsOverTime",      x: 3, y: 6, w: 5, h: 2, static: false },
+											{ i: "Mean",               x: 4, y: 3, w: 1, h: 1, static: false },
+											{ i: "Variance",           x: 4, y: 4, w: 1, h: 1, static: false },
+											{ i: "SD",                 x: 4, y: 5, w: 1, h: 1, static: false },
+											{ i: "HM",                 x: 5, y: 3, w: 3, h: 3, static: false }
 										]
 									}
 								}
